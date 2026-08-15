@@ -1,0 +1,11 @@
+node_modules/
+.vercel
+.DS_Store
+Thumbs.db
+*.log
+
+# A pasta de referencias visuais nao vai para producao.
+Referencias/
+
+# Config local do preview (aponta para caminho temporario desta sessao)
+.claude/

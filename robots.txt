@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://voz-webtv.vercel.app/sitemap.xml

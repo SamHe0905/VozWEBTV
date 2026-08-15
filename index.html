@@ -1,0 +1,468 @@
+﻿<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0B2E5C" />
+
+    <title>Voz WebTV — A rádio da escola, feita por alunos</title>
+    <meta
+      name="description"
+      content="Web rádio e WebTV escolar da rede estadual de Mato Grosso do Sul. Transmissão ao vivo, grade de programação e as notícias produzidas pelos alunos."
+    />
+
+    <!-- Open Graph / compartilhamento -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Voz WebTV" />
+    <meta property="og:title" content="Voz WebTV — A rádio da escola, feita por alunos" />
+    <meta
+      property="og:description"
+      content="Transmissão ao vivo, grade de programação e as notícias produzidas pelos alunos."
+    />
+    <meta property="og:image" content="/assets/img/og-image.png" />
+    <meta property="og:locale" content="pt_BR" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/assets/img/favicon.svg" />
+
+    <!-- Fontes self-hosted: preload apenas dos subsets latin realmente usados -->
+    <link rel="preload" href="/assets/fonts/archivo-black-latin.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/assets/fonts/archivo-latin.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/assets/fonts/jetbrains-mono-latin.woff2" as="font" type="font/woff2" crossorigin />
+
+    <link rel="stylesheet" href="/assets/css/fonts.css" />
+    <link rel="stylesheet" href="/assets/css/styles.css" />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "RadioStation",
+        "name": "Voz WebTV",
+        "description": "Web rádio e WebTV escolar da rede estadual de Mato Grosso do Sul.",
+        "areaServed": "Mato Grosso do Sul, Brasil",
+        "inLanguage": "pt-BR",
+        "genre": ["Educação", "Notícias", "Música"]
+      }
+    </script>
+  </head>
+
+  <body>
+    <a
+      href="#conteudo"
+      class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:border-3 focus:border-azul focus:bg-amarelo focus:px-4 focus:py-3 focus:font-mono focus:text-sm focus:font-bold focus:uppercase focus:text-azul"
+      >Pular para o conteúdo</a
+    >
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         HEADER
+         ═══════════════════════════════════════════════════════════ -->
+    <header class="sticky top-0 z-50 border-b-6 border-azul bg-bg">
+      <div class="flex items-stretch">
+        <!-- Logo em celula propria, separada por borda grossa (ref.) -->
+        <a
+          href="#topo"
+          class="flex shrink-0 items-center gap-3 border-r-6 border-azul bg-azul px-4 py-3 md:px-6"
+          aria-label="Voz WebTV — início"
+        >
+          <svg class="h-7 w-7 shrink-0 text-amarelo md:h-9 md:w-9" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <rect x="1" y="9" width="3" height="6" fill="currentColor" />
+            <rect x="6" y="5" width="3" height="14" fill="currentColor" />
+            <rect x="11" y="2" width="3" height="20" fill="currentColor" />
+            <rect x="16" y="6" width="3" height="12" fill="currentColor" />
+            <rect x="21" y="10" width="2" height="4" fill="currentColor" />
+          </svg>
+          <span class="font-display text-lg uppercase leading-none tracking-tight text-white md:text-2xl">
+            Voz<span class="text-amarelo">WebTV</span>
+          </span>
+        </a>
+
+        <!-- Navegacao desktop -->
+        <nav class="hidden flex-1 items-stretch lg:flex" aria-label="Navegação principal">
+          <a href="#programacao" class="flex items-center border-r-3 border-azul px-6 font-mono text-sm font-bold uppercase tracking-widest transition-colors hover:bg-amarelo">Programação</a>
+          <a href="#webtv" class="flex items-center border-r-3 border-azul px-6 font-mono text-sm font-bold uppercase tracking-widest transition-colors hover:bg-amarelo">WebTV</a>
+          <a href="#noticias" class="flex items-center border-r-3 border-azul px-6 font-mono text-sm font-bold uppercase tracking-widest transition-colors hover:bg-amarelo">Notícias</a>
+          <a href="#participe" class="flex items-center border-r-3 border-azul px-6 font-mono text-sm font-bold uppercase tracking-widest transition-colors hover:bg-amarelo">Participe</a>
+        </nav>
+
+        <!-- Aviso rolante no topo (desktop) -->
+        <div class="ml-auto hidden items-center overflow-hidden border-l-3 border-azul px-5 xl:flex">
+          <p class="font-mono text-xs uppercase tracking-widest text-azul">
+            <span class="mr-2 inline-block h-2 w-2 bg-verde align-middle"></span>
+            Ao vivo de segunda a sexta, 7h às 16h
+          </p>
+        </div>
+
+        <!-- Botao do menu mobile -->
+        <button
+          id="btn-menu"
+          type="button"
+          class="ml-auto flex items-center gap-2 border-l-6 border-azul bg-amarelo px-5 font-mono text-xs font-bold uppercase tracking-widest text-azul lg:hidden"
+          aria-expanded="false"
+          aria-controls="menu-mobile"
+        >
+          <span class="grid gap-[4px]" aria-hidden="true">
+            <span class="block h-[3px] w-6 bg-azul"></span>
+            <span class="block h-[3px] w-6 bg-azul"></span>
+            <span class="block h-[3px] w-6 bg-azul"></span>
+          </span>
+          Menu
+        </button>
+      </div>
+    </header>
+
+    <!-- Painel do menu mobile -->
+    <div id="menu-mobile" class="fixed inset-0 z-[60] hidden bg-verde" role="dialog" aria-modal="true" aria-label="Menu">
+      <div class="flex h-full flex-col">
+        <div class="flex items-center justify-between border-b-6 border-azul px-4 py-4">
+          <span class="font-display text-xl uppercase text-white">Menu</span>
+          <button id="btn-fechar-menu" type="button" class="border-3 border-azul bg-amarelo px-4 py-2 font-mono text-xs font-bold uppercase tracking-widest text-azul">
+            Fechar ✕
+          </button>
+        </div>
+        <nav class="flex flex-1 flex-col justify-center gap-2 px-6" aria-label="Navegação mobile">
+          <a href="#programacao" data-fecha-menu class="border-b-3 border-azul/40 py-4 font-display text-4xl uppercase text-white">Programação</a>
+          <a href="#webtv" data-fecha-menu class="border-b-3 border-azul/40 py-4 font-display text-4xl uppercase text-white">WebTV</a>
+          <a href="#noticias" data-fecha-menu class="border-b-3 border-azul/40 py-4 font-display text-4xl uppercase text-white">Notícias</a>
+          <a href="#participe" data-fecha-menu class="py-4 font-display text-4xl uppercase text-white">Participe</a>
+        </nav>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         PLAYER — faixa gigante colada abaixo do header
+         ═══════════════════════════════════════════════════════════ -->
+    <section id="topo" class="border-b-6 border-azul bg-azul text-bg" aria-label="Player ao vivo">
+      <div class="container-site">
+        <div class="flex flex-col items-stretch gap-0 py-4 md:flex-row md:items-center md:gap-6 md:py-5">
+          <!-- Bloco: botao + estado. `min-w-0` deixa o titulo truncar em vez
+               de empurrar a largura da faixa e criar rolagem horizontal. -->
+          <div class="flex min-w-0 flex-1 items-center gap-4 md:gap-5">
+            <button
+              id="btn-play"
+              type="button"
+              class="grid h-20 w-20 shrink-0 place-items-center border-6 border-bg bg-verde text-bg shadow-hard-bg transition-transform duration-100 ease-out hover:translate-x-[3px] hover:translate-y-[3px] active:translate-x-[6px] active:translate-y-[6px] active:shadow-none md:h-24 md:w-24"
+              aria-pressed="false"
+              aria-label="Tocar a rádio ao vivo"
+            >
+              <!-- Icone: play -->
+              <svg id="icone-play" class="h-8 w-8 md:h-10 md:w-10" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M5 2l16 10L5 22z" />
+              </svg>
+              <!-- Icone: pause -->
+              <svg id="icone-pause" class="hidden h-8 w-8 md:h-10 md:w-10" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <rect x="4" y="3" width="6" height="18" />
+                <rect x="14" y="3" width="6" height="18" />
+              </svg>
+              <!-- Icone: carregando -->
+              <svg id="icone-load" class="hidden h-8 w-8 animate-live md:h-10 md:w-10" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <rect x="2" y="10" width="4" height="4" />
+                <rect x="10" y="10" width="4" height="4" />
+                <rect x="18" y="10" width="4" height="4" />
+              </svg>
+            </button>
+
+            <div class="min-w-0 flex-1">
+              <div class="flex items-center gap-2">
+                <span id="selo-estado" class="inline-flex items-center gap-2 border-3 border-bg bg-amarelo px-2 py-1 font-mono text-[10px] font-bold uppercase tracking-widest text-azul md:text-xs">
+                  <span id="ponto-live" class="inline-block h-2 w-2 bg-azul"></span>
+                  <span id="texto-estado">No ar</span>
+                </span>
+                <!-- Equalizador: so aparece tocando -->
+                <span id="equalizador" class="hidden h-5 items-end gap-[3px]" aria-hidden="true">
+                  <span class="eq-barra h-full animate-eq" style="animation-delay: 0ms"></span>
+                  <span class="eq-barra h-full animate-eq" style="animation-delay: 150ms"></span>
+                  <span class="eq-barra h-full animate-eq" style="animation-delay: 300ms"></span>
+                  <span class="eq-barra h-full animate-eq" style="animation-delay: 450ms"></span>
+                </span>
+              </div>
+              <p id="np-titulo" class="mt-1 truncate font-display text-lg/[1.1] uppercase md:text-2xl/[1.1] lg:text-3xl/[1.1]">
+                Voz WebTV
+              </p>
+              <p id="np-meta" class="truncate font-mono text-[11px] uppercase tracking-widest text-amarelo md:text-xs" aria-live="polite">
+                Toque no play para ouvir
+              </p>
+            </div>
+          </div>
+
+          <!-- Volume + atalho -->
+          <div class="ml-auto hidden shrink-0 items-center gap-5 md:flex">
+            <div class="flex items-center gap-3">
+              <button id="btn-mute" type="button" class="grid h-10 w-10 place-items-center border-3 border-bg text-bg transition-colors hover:bg-bg hover:text-azul" aria-label="Silenciar">
+                <svg id="icone-som" class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M3 9v6h4l5 4V5L7 9H3z" />
+                  <path d="M16 8.5c1.2 1 1.2 6 0 7v-7zM19 6c2.5 2 2.5 10 0 12V6z" />
+                </svg>
+                <svg id="icone-mudo" class="hidden h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M3 9v6h4l5 4V5L7 9H3z" />
+                  <path d="M16 9l6 6M22 9l-6 6" stroke="currentColor" stroke-width="2.5" fill="none" />
+                </svg>
+              </button>
+              <input id="volume" type="range" min="0" max="100" value="80" class="slider w-28 lg:w-36" aria-label="Volume" />
+            </div>
+            <a href="#webtv" class="btn btn-claro hidden whitespace-nowrap xl:inline-flex">Ver a WebTV →</a>
+          </div>
+        </div>
+      </div>
+
+      <audio id="audio" preload="none" crossorigin="anonymous"></audio>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         MARQUEE SUPERIOR
+         ═══════════════════════════════════════════════════════════ -->
+    <div class="my-8 -rotate-[1.5deg] md:my-10">
+      <div class="marquee bg-amarelo text-azul">
+        <div class="marquee__trilha animate-marquee py-2 md:py-3" id="marquee-topo"></div>
+      </div>
+    </div>
+
+    <main id="conteudo">
+      <!-- ═════════════════════════════════════════════════════════════
+           HERO
+           ═════════════════════════════════════════════════════════ -->
+      <section class="container-site pb-14 pt-4 md:pb-20">
+        <div class="grid items-end gap-8 lg:grid-cols-12">
+          <div class="lg:col-span-7">
+            <span class="rotulo text-verde-dark">A rádio da escola</span>
+            <!-- A entrelinha vai junto do tamanho (`text-x/[y]`): as utilities
+                 text-* do Tailwind tambem definem line-height, e a variante
+                 responsiva sobrescreveria um `leading-*` solto. -->
+            <h1 class="mt-3 font-display text-[3.25rem]/[0.82] uppercase tracking-tighter text-azul sm:text-7xl/[0.82] md:text-8xl/[0.82] xl:text-[8.5rem]/[0.82]">
+              Voz<br />
+              <span class="text-verde">WebTV</span>
+            </h1>
+            <p class="mt-6 max-w-[55ch] font-sans text-base leading-relaxed text-tinta md:text-lg">
+              Notícia, música e cultura produzidas por quem vive a escola todo dia.
+              Uma rádio <mark class="bg-amarelo px-2 text-azul">feita por alunos</mark>, no ar de
+              segunda a sexta.
+            </p>
+            <div class="mt-8 flex flex-wrap gap-4">
+              <a href="#programacao" class="btn btn-primario">Ver a programação →</a>
+              <a href="#participe" class="btn btn-fantasma">Quero participar →</a>
+            </div>
+          </div>
+
+          <!-- Bloco solido de destaque -->
+          <div class="lg:col-span-5">
+            <div class="border-6 border-azul bg-verde p-6 shadow-hard md:p-8">
+              <span id="hero-selo" class="badge border-azul bg-amarelo">Agora na rádio</span>
+              <p class="mt-5 font-display text-3xl/[0.95] uppercase text-white md:text-4xl/[0.95]">
+                <span id="hero-programa">Programação da semana</span>
+              </p>
+              <p class="mt-3 font-mono text-xs uppercase tracking-widest text-white" id="hero-horario">
+                Segunda a sexta · 07h — 16h
+              </p>
+              <div class="mt-6 border-t-3 border-white/30 pt-5">
+                <dl class="grid grid-cols-3 gap-3 text-center">
+                  <div>
+                    <dt class="font-mono text-[10px] uppercase tracking-widest text-white">Programas</dt>
+                    <dd class="font-display text-3xl leading-none text-white" id="stat-programas">—</dd>
+                  </div>
+                  <div class="border-x-3 border-white/30">
+                    <dt class="font-mono text-[10px] uppercase tracking-widest text-white">Dias no ar</dt>
+                    <dd class="font-display text-3xl leading-none text-white">7</dd>
+                  </div>
+                  <div>
+                    <dt class="font-mono text-[10px] uppercase tracking-widest text-white">Turmas</dt>
+                    <dd class="font-display text-3xl leading-none text-white">12</dd>
+                  </div>
+                </dl>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═════════════════════════════════════════════════════════════
+           PROGRAMAÇÃO
+           ═════════════════════════════════════════════════════════ -->
+      <section id="programacao" class="container-site scroll-mt-24 py-14 md:py-20">
+        <div class="mb-8 flex flex-col gap-4 border-b-6 border-azul pb-5 md:mb-10 md:flex-row md:items-end md:justify-between">
+          <div>
+            <span class="rotulo text-verde-dark">Programação</span>
+            <h2 class="mt-2 font-display text-4xl/[0.9] uppercase tracking-tight text-azul md:text-6xl/[0.9]">
+              Nossa grade
+            </h2>
+          </div>
+          <p class="max-w-[38ch] font-sans text-sm text-cinza md:text-right">
+            Atualizada pelos professores direto na planilha. O programa no ar agora aparece em destaque.
+          </p>
+        </div>
+
+        <!-- Filtro de dias -->
+        <div class="sem-scrollbar -mx-4 mb-8 overflow-x-auto px-4 md:mx-0 md:px-0">
+          <div class="flex min-w-max gap-2" id="filtro-dias" role="tablist" aria-label="Dia da semana"></div>
+        </div>
+
+        <!-- Grade -->
+        <div id="grade" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" aria-live="polite"></div>
+      </section>
+
+      <!-- ═════════════════════════════════════════════════════════════
+           WEBTV — faixa escura
+           ═════════════════════════════════════════════════════════ -->
+      <section id="webtv" class="scroll-mt-24 border-y-6 border-azul bg-azul py-14 text-bg md:py-20">
+        <div class="container-site">
+          <div class="mb-8 flex flex-col gap-4 border-b-6 border-amarelo pb-5 md:mb-10 md:flex-row md:items-end md:justify-between">
+            <div>
+              <span class="rotulo text-amarelo">Ao vivo em vídeo</span>
+              <h2 class="mt-2 font-display text-4xl/[0.9] uppercase tracking-tight text-bg md:text-6xl/[0.9]">
+                Voz WebTV
+              </h2>
+            </div>
+            <a href="#" class="btn btn-claro self-start md:self-auto">Inscreva-se no canal →</a>
+          </div>
+
+          <div class="grid gap-8 lg:grid-cols-12">
+            <!-- Player de video (facade) -->
+            <div class="lg:col-span-8">
+              <div id="webtv-container" class="relative aspect-video w-full border-6 border-bg bg-tinta">
+                <!-- preenchido por webtv.js -->
+              </div>
+              <p class="mt-4 font-mono text-xs uppercase tracking-widest text-amarelo" id="webtv-legenda"></p>
+            </div>
+
+            <!-- Bloco amarelo lateral -->
+            <aside class="lg:col-span-4">
+              <div class="h-full border-6 border-bg bg-amarelo p-6 text-azul shadow-hard-bg md:p-8">
+                <span class="rotulo">Toda quinta</span>
+                <p class="mt-4 font-display text-3xl/[0.95] uppercase md:text-4xl/[0.95]">
+                  Jornal da Voz
+                </p>
+                <p class="mt-4 font-sans text-sm leading-relaxed">
+                  Reportagens, entrevistas e bastidores gravados e editados pelos próprios
+                  alunos, com apoio da coordenação pedagógica.
+                </p>
+                <ul class="mt-6 space-y-3 border-t-3 border-azul pt-5 font-mono text-xs uppercase tracking-widest">
+                  <li class="flex justify-between gap-3"><span>Quinta</span><span class="font-bold">14h00</span></li>
+                  <li class="flex justify-between gap-3 border-t-3 border-azul/25 pt-3"><span>Duração</span><span class="font-bold">25 min</span></li>
+                  <li class="flex justify-between gap-3 border-t-3 border-azul/25 pt-3"><span>Estúdio</span><span class="font-bold">Sala 12</span></li>
+                </ul>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═════════════════════════════════════════════════════════════
+           NOTÍCIAS
+           ═════════════════════════════════════════════════════════ -->
+      <section id="noticias" class="container-site scroll-mt-24 py-14 md:py-20">
+        <div class="mb-8 flex flex-col gap-4 border-b-6 border-azul pb-5 md:mb-10 md:flex-row md:items-end md:justify-between">
+          <div>
+            <span class="rotulo text-verde-dark">Notícias</span>
+            <h2 class="mt-2 font-display text-4xl/[0.9] uppercase tracking-tight text-azul md:text-6xl/[0.9]">
+              Últimas da escola
+            </h2>
+          </div>
+          <a href="#" class="link-grosso font-mono text-sm font-bold uppercase tracking-widest text-azul">Ver todas →</a>
+        </div>
+
+        <div id="lista-noticias" class="grid gap-6 md:grid-cols-2 lg:grid-cols-3" aria-live="polite"></div>
+      </section>
+
+      <!-- ═════════════════════════════════════════════════════════════
+           PARTICIPE — faixa verde
+           ═════════════════════════════════════════════════════════ -->
+      <section id="participe" class="scroll-mt-24 border-y-6 border-azul bg-verde py-14 text-white md:py-20">
+        <div class="container-site">
+          <div class="grid items-center gap-10 lg:grid-cols-12">
+            <div class="lg:col-span-7">
+              <span class="rotulo text-white">Participe</span>
+              <h2 class="mt-2 font-display text-4xl/[0.88] uppercase tracking-tight md:text-6xl/[0.88]">
+                O microfone<br />também é seu
+              </h2>
+              <p class="mt-6 max-w-[52ch] font-sans text-base leading-relaxed md:text-lg">
+                Locução, pauta, edição, operação de áudio ou reportagem: tem espaço para todo
+                mundo. Procure a coordenação ou fale com a equipe da rádio no intervalo.
+              </p>
+              <div class="mt-8 flex flex-wrap gap-4">
+                <a href="#" class="btn btn-claro">Falar com a equipe →</a>
+                <a href="#programacao" class="btn border-bg bg-transparent text-white shadow-hard-bg">Ver a grade →</a>
+              </div>
+            </div>
+
+            <!-- Cards da equipe -->
+            <div class="lg:col-span-5">
+              <div class="grid grid-cols-2 gap-4" id="lista-equipe"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         MARQUEE INFERIOR
+         ═══════════════════════════════════════════════════════════ -->
+    <div class="my-10 rotate-[1.5deg] md:my-14">
+      <div class="marquee bg-verde text-white">
+        <div class="marquee__trilha animate-marquee-slow py-2 md:py-3" id="marquee-rodape"></div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         RODAPÉ
+         ═══════════════════════════════════════════════════════════ -->
+    <footer class="overflow-hidden border-t-6 border-azul bg-azul text-bg">
+      <div class="container-site py-14 md:py-16">
+        <div class="grid gap-10 md:grid-cols-4">
+          <div class="md:col-span-2">
+            <p class="font-display text-2xl uppercase leading-none">
+              Voz<span class="text-amarelo">WebTV</span>
+            </p>
+            <p class="mt-4 max-w-[40ch] font-sans text-sm leading-relaxed text-bg/80">
+              Web rádio e WebTV escolar da rede estadual de Mato Grosso do Sul. Um projeto de
+              comunicação, cultura e protagonismo estudantil.
+            </p>
+            <div class="mt-6 space-y-2 font-mono text-xs uppercase tracking-widest">
+              <p>
+                <span class="text-amarelo">E-mail</span>
+                <a href="mailto:contato@vozwebtv.com.br" class="link-grosso ml-2">contato@vozwebtv.com.br</a>
+              </p>
+              <p><span class="text-amarelo">Estúdio</span><span class="ml-2">Sala 12 · Bloco B</span></p>
+            </div>
+          </div>
+
+          <div>
+            <p class="border-b-3 border-amarelo pb-2 font-mono text-xs font-bold uppercase tracking-widest text-amarelo">
+              Navegue
+            </p>
+            <ul class="mt-4 space-y-3 font-mono text-xs uppercase tracking-widest">
+              <li><a href="#programacao" class="link-grosso">Programação</a></li>
+              <li><a href="#webtv" class="link-grosso">WebTV</a></li>
+              <li><a href="#noticias" class="link-grosso">Notícias</a></li>
+              <li><a href="#participe" class="link-grosso">Participe</a></li>
+            </ul>
+          </div>
+
+          <div>
+            <p class="border-b-3 border-amarelo pb-2 font-mono text-xs font-bold uppercase tracking-widest text-amarelo">
+              Redes
+            </p>
+            <ul class="mt-4 space-y-3 font-mono text-xs uppercase tracking-widest">
+              <li><a href="#" class="link-grosso">Instagram</a></li>
+              <li><a href="#" class="link-grosso">YouTube</a></li>
+              <li><a href="#" class="link-grosso">Spotify</a></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="mt-12 flex flex-col gap-3 border-t-3 border-bg/25 pt-6 font-mono text-[10px] uppercase tracking-widest text-bg/70 md:flex-row md:items-center md:justify-between">
+          <p>© 2026 Voz WebTV · Secretaria de Estado de Educação de MS</p>
+          <p>Feito por alunos, na escola pública</p>
+        </div>
+      </div>
+
+      <!-- Logotipo gigante sangrando na base (assinatura da referencia) -->
+      <p
+        class="select-none whitespace-nowrap px-2 font-display text-[19vw] uppercase leading-[0.75] tracking-tighter text-bg/10"
+        aria-hidden="true"
+      >
+        Voz WebTV
+      </p>
+    </footer>
+
+    <script type="module" src="/assets/js/main.js"></script>
+  </body>
+</html>

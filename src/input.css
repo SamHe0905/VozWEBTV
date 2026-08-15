@@ -1,0 +1,217 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ═══════════════════════════════════════════════════════════════════
+   VOZ WEBTV — camadas custom do design system
+   Regras em visual.md. Cantos retos, bordas grossas, sombras solidas.
+   ═══════════════════════════════════════════════════════════════════ */
+
+@layer base {
+  :root {
+    --azul: #0b2e5c;
+    --verde: #007a33;
+    --amarelo: #ffc72c;
+    --bg: #f5f2ea;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    /* Compensa o header sticky ao pular por ancora. */
+    scroll-padding-top: 5.5rem;
+  }
+
+  body {
+    @apply bg-bg text-tinta font-sans antialiased;
+    /* Os elementos que sangram (marquee rotacionado, logotipo do rodape)
+       ultrapassam a viewport de proposito. `clip` corta o excesso sem criar
+       barra horizontal — e, diferente de `hidden`, nao quebra o header sticky. */
+    overflow-x: clip;
+    /* Trama de papel: o fundo off-white ganha textura sem custo de imagem. */
+    background-image:
+      linear-gradient(rgba(11, 46, 92, 0.045) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(11, 46, 92, 0.045) 1px, transparent 1px);
+    background-size: 28px 28px;
+  }
+
+  /* Selecao de texto na paleta institucional. */
+  ::selection {
+    background: var(--amarelo);
+    color: var(--azul);
+  }
+
+  /* Foco visivel e grosso — nunca remover.
+     Usa `outline`, nao `box-shadow`: as sombras solidas do design system
+     vivem em @layer components, que vence @layer base na cascata e apagaria
+     um anel feito com box-shadow. Outline nao colide com nada. */
+  :focus-visible {
+    outline: 4px solid var(--amarelo);
+    outline-offset: 3px;
+    position: relative;
+    z-index: 60;
+  }
+
+  /* Sobre fundo amarelo o anel some; ali ele vira azul. */
+  .bg-amarelo :focus-visible,
+  .bg-amarelo:focus-visible {
+    outline-color: var(--azul);
+  }
+
+  h1,
+  h2,
+  h3 {
+    @apply font-display uppercase;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+}
+
+@layer components {
+  /* ── Container editorial ─────────────────────────────────────── */
+  .container-site {
+    @apply mx-auto w-full max-w-site px-4 md:px-8;
+  }
+
+  /* ── Botao: base + variantes ─────────────────────────────────── */
+  .btn {
+    @apply inline-flex items-center justify-center gap-3 border-3 border-azul
+           px-6 py-3 font-mono text-xs font-bold uppercase tracking-widest
+           shadow-hard transition-transform duration-100 ease-out
+           hover:translate-x-[3px] hover:translate-y-[3px] hover:shadow-hard-sm
+           active:translate-x-[6px] active:translate-y-[6px] active:shadow-none
+           md:text-sm;
+  }
+  .btn-primario {
+    @apply bg-verde text-white;
+  }
+  .btn-secundario {
+    @apply bg-amarelo text-azul;
+  }
+  .btn-claro {
+    @apply border-bg bg-amarelo text-azul shadow-hard-bg;
+  }
+  .btn-fantasma {
+    @apply bg-transparent text-azul shadow-none hover:translate-x-0
+           hover:translate-y-0 hover:bg-azul hover:text-bg active:translate-x-0
+           active:translate-y-0;
+  }
+
+  /* ── Badge / tag ─────────────────────────────────────────────── */
+  .badge {
+    @apply inline-block border-3 border-azul bg-paper px-2 py-1 font-mono
+           text-[10px] font-bold uppercase leading-none tracking-widest
+           text-azul md:text-xs;
+  }
+
+  /* ── Rotulo de secao: ( PROGRAMACAO ) ────────────────────────── */
+  .rotulo {
+    @apply font-mono text-[11px] font-bold uppercase tracking-[0.25em]
+           md:text-xs;
+  }
+  .rotulo::before {
+    content: '( ';
+  }
+  .rotulo::after {
+    content: ' )';
+  }
+
+  /* ── Card base ───────────────────────────────────────────────── */
+  .card {
+    @apply border-3 border-azul bg-paper shadow-hard transition-transform
+           duration-150 ease-out;
+  }
+
+  /* ── Link com sublinhado grosso ──────────────────────────────── */
+  .link-grosso {
+    @apply underline decoration-3 underline-offset-4 transition-colors
+           hover:decoration-amarelo;
+  }
+
+  /* ── Faixa marquee ───────────────────────────────────────────── */
+  .marquee {
+    @apply overflow-hidden border-y-6 border-azul;
+    /* Mais largo que a viewport de proposito: a faixa e' rotacionada, e sem
+       essa folga os cantos deixariam vaos triangulares nas laterais.
+       O excesso e' cortado pelo `overflow-x: clip` do body. */
+    width: 106vw;
+    margin-left: calc(50% - 53vw);
+    margin-right: calc(50% - 53vw);
+  }
+  .marquee__trilha {
+    @apply flex w-max items-center;
+  }
+  .marquee__item {
+    @apply whitespace-nowrap px-6 font-display text-2xl uppercase md:text-4xl;
+  }
+
+  /* ── Equalizador do player (barras animadas) ─────────────────── */
+  .eq-barra {
+    @apply block w-[4px] bg-amarelo;
+    transform-origin: bottom;
+  }
+
+  /* ── Slider de volume ────────────────────────────────────────── */
+  .slider {
+    @apply h-3 w-full appearance-none border-3 border-bg bg-azul-mid;
+  }
+  .slider::-webkit-slider-thumb {
+    @apply h-5 w-5 appearance-none border-3 border-azul bg-amarelo;
+    cursor: pointer;
+  }
+  .slider::-moz-range-thumb {
+    @apply h-5 w-5 border-3 border-azul bg-amarelo;
+    border-radius: 0;
+    cursor: pointer;
+  }
+
+  /* ── Skeleton de carregamento ────────────────────────────────── */
+  .skeleton {
+    @apply animate-pulse border-3 border-azul/30 bg-azul/10;
+  }
+}
+
+@layer utilities {
+  /* Sangra ate a borda da viewport dentro de um container. */
+  .sangra {
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+  }
+
+  /* Contorno de texto para o efeito "outline" do marquee. */
+  .texto-vazado {
+    -webkit-text-stroke: 2px currentColor;
+    color: transparent;
+  }
+
+  /* Esconde a barra de rolagem mantendo o scroll (carrossel de cards). */
+  .sem-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .sem-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   Acessibilidade: respeita quem pediu menos movimento.
+   ═══════════════════════════════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .marquee__trilha {
+    transform: none !important;
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "name": "voz-webtv",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Site da web radio escolar Voz WebTV",
+  "scripts": {
+    "dev": "tailwindcss -i ./src/input.css -o ./assets/css/styles.css --watch",
+    "build": "tailwindcss -i ./src/input.css -o ./assets/css/styles.css --minify"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.17"
+  }
+}
