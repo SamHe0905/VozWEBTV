@@ -7,8 +7,15 @@
 
 ## Estado atual
 
-**📍 Fase 2 — `index.html` com o design system aplicado.**
+**📍 Fase 2 — `index.html` com o design system aplicado + grade 24h.**
 Data: 15/08/2026 · Status: **concluída e pronta para deploy**.
+
+### Como a rádio opera (decisão do dia 15/08)
+A rádio fica **no ar 24h**, mas **não tem locutor 24h**. A trilha é música
+automática (script que alimenta o AzuraCast); o locutor entra apenas nas janelas
+marcadas na grade. A coluna **`tipo`** (`AO VIVO` / `AUTOMATICO`) na planilha é a
+fonte da verdade dessa distinção — **não** deduzir pelo campo `apresentador`.
+Proporção na grade atual: **14% ao vivo, 86% automático**.
 
 O site roda inteiro com dados de demonstração, sem depender de nenhuma API.
 `MODO_DEMO = true` em `assets/js/config.js` desliga toda chamada de rede.
@@ -44,7 +51,10 @@ Radio/
 
 | Verificação | Resultado |
 |---|---|
-| Contraste WCAG AA — 144 elementos de texto, nos 7 dias da grade | **0 reprovas** |
+| Contraste WCAG AA — página inteira + 70 cards nos 7 dias | **0 reprovas** |
+| Cobertura 24h — 504 checagens (7 dias × 24h × 3 minutos) | **0 buracos** |
+| Bloco cruzando a meia-noite (sáb 23:00–01:00 no ar às 00:30 de dom) | correto |
+| `validarGrade()` — 7 casos: buraco, sobreposição, fim cedo, início tarde, dia vazio, grade correta, virada válida | **7/7 corretos** |
 | Rolagem horizontal em 375px e 800px | **nenhuma** (`scrollX = 0`) |
 | Erros no console | **nenhum** |
 | Peso da primeira visita | 191 KB sem compressão · ~110 KB com Brotli no Vercel |
@@ -83,6 +93,10 @@ Radio/
 | 11 | Nenhum dado pessoal de aluno na planilha | A planilha publicada é pública |
 | 12 | Player **nunca** dá autoplay | Bloqueado pelos navegadores e hostil ao usuário |
 | 13 | Fuso fixado em `America/Campo_Grande` | O "no ar agora" não pode depender do relógio do visitante |
+| 14 | Coluna **`tipo`** (`AO VIVO`/`AUTOMATICO`) é a fonte da verdade | Deduzir pelo `apresentador` quebra se alguém digitar diferente |
+| 15 | Em sobreposição de horários, vence quem **começou por último** | Evita que um bloco longo engula um programa curto cadastrado dentro dele |
+| 16 | Blocos podem cruzar a meia-noite; cadastrar no dia em que **começam** | Grade 24h torna isso rotina, não exceção |
+| 17 | Nada de `opacity-*` em cards | Opacidade no card reduz o contraste de tudo dentro dele |
 
 ---
 
@@ -132,6 +146,26 @@ de `mock.js` se a planilha falhar — a grade nunca aparece vazia.
 ---
 
 ## Log de sessões
+
+### 15/08/2026 — Sessão 3 (grade 24h)
+- Definido que a rádio opera 24h **sem locutor 24h**: música automática o tempo todo,
+  locução só nas janelas da grade. Criada a coluna **`tipo`** para tornar isso explícito.
+- Grade regerada: 70 blocos, cobertura 00:00–00:00 nos 7 dias, 14% ao vivo / 86% automático.
+  Primeira versão tinha 52 blocos ao vivo (~10h de locução por dia) — irreal para uma escola;
+  reequilibrada para 3–4 janelas curtas por dia letivo.
+- Gerado **`planilha-voz-webtv.xlsx`** (5 abas, com LEIA-ME para professores) e
+  **`PLANILHA.md`** com o passo a passo de publicação no Google Sheets.
+- `mock.js` e a planilha saem do **mesmo gerador**, para nunca divergirem.
+- **Dois bugs reais corrigidos:**
+  1. **Bloco cruzando a meia-noite não era encontrado.** `estaNoAr` exigia `item.dia === hoje`,
+     então `SÁBADO 23:00–01:00` sumia às 00:30 de domingo. Com grade 24h isso deixa de ser
+     caso raro. Agora a checagem herda blocos do dia anterior que atravessam a virada.
+  2. **`validarGrade()` acusava buraco falso** justamente nesses blocos, porque contava a
+     cobertura dia a dia sem creditar o transbordo para o dia seguinte.
+- Adicionado tratamento de sobreposição (vence quem começou por último) e o validador
+  que loga buracos/sobreposições no console para quem cuida da planilha.
+- Removido um `opacity-90` que eu havia posto nos cards automáticos: opacidade no card
+  derruba o contraste de todo o conteúdo interno, e a distinção já vinha da cor e do rótulo.
 
 ### 15/08/2026 — Sessão 2
 - Construída a Fase 2 inteira: build do Tailwind, fontes self-hosted, `index.html`, seis módulos JS e os arquivos de deploy.

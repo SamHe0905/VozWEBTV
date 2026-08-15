@@ -20,6 +20,40 @@ const CORES = {
   branco: 'bg-paper text-tinta',
 };
 
+/**
+ * Periodos do dia, para agrupar a grade de 24h.
+ * `ate` e' exclusivo e esta em minutos desde a meia-noite.
+ */
+const PERIODOS = [
+  { id: 'madrugada', rotulo: 'Madrugada', faixa: '00h — 06h', ate: 6 * 60 },
+  { id: 'manha', rotulo: 'Manhã', faixa: '06h — 12h', ate: 12 * 60 },
+  { id: 'tarde', rotulo: 'Tarde', faixa: '12h — 18h', ate: 18 * 60 },
+  { id: 'noite', rotulo: 'Noite', faixa: '18h — 00h', ate: 24 * 60 },
+];
+
+function periodoDe(hhmm) {
+  const m = paraMinutos(hhmm);
+  return (PERIODOS.find((p) => m < p.ate) || PERIODOS[3]).id;
+}
+
+/**
+ * O bloco e' playlist automatica (sem locutor)?
+ *
+ * A radio fica no ar 24h, mas o locutor entra so nas janelas marcadas como
+ * AO VIVO — o resto e' musica. A coluna `tipo` da planilha e' a fonte da
+ * verdade; a ausencia de `apresentador` e' apenas o desempate para linhas
+ * antigas ou preenchidas pela metade.
+ */
+export function ehAutomatico(item) {
+  const tipo = String(item.tipo || '')
+    .toUpperCase()
+    .replace(/[ÁÀÂÃ]/g, 'A')
+    .trim();
+  if (tipo === 'AUTOMATICO') return true;
+  if (tipo === 'AO VIVO') return false;
+  return !String(item.apresentador || '').trim();
+}
+
 let itens = [];
 let diaSelecionado = null;
 
@@ -54,20 +88,117 @@ export function agoraNoMS() {
   };
 }
 
-/** Um item esta no ar agora? Trata programas que cruzam a meia-noite. */
-function estaNoAr(item, agora) {
-  if (item.dia !== agora.dia) return false;
-  const ini = paraMinutos(item.hora_inicio);
-  const fim = paraMinutos(item.hora_fim);
-  return fim > ini
-    ? agora.minutos >= ini && agora.minutos < fim
-    : agora.minutos >= ini || agora.minutos < fim;
+/** O dia anterior a `dia` na semana. */
+function diaAnterior(dia) {
+  return DIAS[(DIAS.indexOf(dia) + 6) % 7];
 }
 
-/** Programa no ar neste momento, ou `null`. */
+/**
+ * Um item esta no ar agora?
+ *
+ * Numa radio 24h, blocos que cruzam a meia-noite sao rotina (ex.: SEGUNDA
+ * 22:00–00:00, ou SABADO 23:00–01:00). Um bloco assim continua no ar depois
+ * da virada, mas ja e' o DIA SEGUINTE no relogio — por isso a checagem
+ * aceita duas situacoes:
+ *
+ *   a) o item e' de hoje e o relogio esta dentro da faixa;
+ *   b) o item e' de ONTEM, cruza a meia-noite, e o relogio ainda nao passou
+ *      do horario de fim.
+ */
+function estaNoAr(item, agora) {
+  const ini = paraMinutos(item.hora_inicio);
+  const fim = paraMinutos(item.hora_fim);
+  const cruzaMeiaNoite = fim <= ini;
+
+  if (item.dia === agora.dia) {
+    return cruzaMeiaNoite ? agora.minutos >= ini : agora.minutos >= ini && agora.minutos < fim;
+  }
+
+  // Heranca do dia anterior: so vale para blocos que atravessam a virada.
+  if (cruzaMeiaNoite && item.dia === diaAnterior(agora.dia)) {
+    return agora.minutos < fim;
+  }
+
+  return false;
+}
+
+/**
+ * Programa no ar neste momento, ou `null`.
+ *
+ * Se a planilha tiver horarios sobrepostos — erro de digitacao provavel
+ * quando varias pessoas editam a grade — vence o bloco que comecou por
+ * ULTIMO. E' o que corresponde a intuicao de "o que entrou no ar mais
+ * recentemente e' o que esta tocando", e evita que um bloco longo da tarde
+ * engula um programa curto cadastrado dentro dele.
+ */
 export function programaAtual() {
   const agora = agoraNoMS();
-  return itens.find((i) => estaNoAr(i, agora)) || null;
+  const noAr = itens.filter((i) => estaNoAr(i, agora));
+  if (!noAr.length) return null;
+
+  // Blocos herdados de ontem comecaram antes de qualquer bloco de hoje.
+  const inicioRelativo = (i) =>
+    i.dia === agora.dia ? paraMinutos(i.hora_inicio) : paraMinutos(i.hora_inicio) - 1440;
+
+  return noAr.reduce((a, b) => (inicioRelativo(b) > inicioRelativo(a) ? b : a));
+}
+
+/**
+ * Confere a cobertura 24h e avisa no console o que estiver errado.
+ *
+ * Nao interrompe nada: o site continua funcionando. Serve para quem cuida
+ * da planilha descobrir buracos e sobreposicoes sem precisar conferir 70
+ * linhas na mao.
+ */
+export function validarGrade(lista = itens) {
+  const avisos = [];
+
+  // Cada dia recebe os intervalos que realmente tocam nele. Um bloco que
+  // cruza a meia-noite (ex.: 23:00–01:00) contribui em DOIS dias: o trecho
+  // ate 00:00 no proprio dia, e o resto no dia seguinte.
+  const cobertura = Object.fromEntries(DIAS.map((d) => [d, []]));
+
+  for (const b of lista) {
+    if (!cobertura[b.dia]) continue;
+    const ini = paraMinutos(b.hora_inicio);
+    const fim = paraMinutos(b.hora_fim);
+
+    if (fim > ini) {
+      cobertura[b.dia].push({ ini, fim, nome: b.programa });
+    } else {
+      const seguinte = DIAS[(DIAS.indexOf(b.dia) + 1) % 7];
+      cobertura[b.dia].push({ ini, fim: 1440, nome: b.programa });
+      if (fim > 0) cobertura[seguinte].push({ ini: 0, fim, nome: `${b.programa} (vindo de ${b.dia})` });
+    }
+  }
+
+  for (const dia of DIAS) {
+    const faixas = cobertura[dia].sort((a, b) => a.ini - b.ini);
+    if (!faixas.length) {
+      avisos.push(`${dia}: nenhum programa cadastrado`);
+      continue;
+    }
+
+    let coberto = 0;
+    for (const f of faixas) {
+      if (f.ini > coberto) avisos.push(`${dia}: buraco entre ${fmt(coberto)} e ${fmt(f.ini)}`);
+      else if (f.ini < coberto) avisos.push(`${dia}: "${f.nome}" (${fmt(f.ini)}) sobrepoe o bloco anterior`);
+      coberto = Math.max(coberto, f.fim);
+    }
+    if (coberto < 1440) avisos.push(`${dia}: nada no ar entre ${fmt(coberto)} e 00:00`);
+  }
+
+  if (avisos.length) {
+    console.warn(
+      `[Voz WebTV] A grade nao cobre as 24h em ${avisos.length} ponto(s):\n  • ` +
+        avisos.join('\n  • ')
+    );
+  }
+  return avisos;
+}
+
+function fmt(min) {
+  return `${String(Math.floor(min / 60)).padStart(2, '0')}:${String(min % 60).padStart(2, '0')}`;
 }
 
 /**
@@ -157,6 +288,74 @@ function cardVazio() {
     </div>`;
 }
 
+/** Icone de nota musical, para marcar os blocos sem locutor. */
+const ICONE_MUSICA = `
+  <svg class="h-3 w-3 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+    <path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>
+  </svg>`;
+
+function cardPrograma(item, i, agora) {
+  const noAr = estaNoAr(item, agora);
+  const automatico = ehAutomatico(item);
+
+  // Rotacao alternada e sutil, so a partir de `md`. No mobile o card fica
+  // reto: em coluna unica a inclinacao quebra o alinhamento.
+  const giro = noAr ? '' : i % 2 === 0 ? 'md:-rotate-[1.5deg]' : 'md:rotate-[1.5deg]';
+
+  const base = noAr
+    ? 'bg-verde text-white border-6 shadow-hard-lg'
+    : `${CORES[item.cor] || CORES.branco} border-3 shadow-hard`;
+
+  // O texto de apoio e a tag seguem a luminosidade do fundo do card, nao a
+  // cor especifica: azul, verde e o destaque "no ar" sao escuros e pedem
+  // texto claro; amarelo e branco pedem texto escuro.
+  const fundoEscuro = noAr || item.cor === 'azul' || item.cor === 'verde';
+  const apoio = fundoEscuro ? 'text-white/90' : 'text-tinta/75';
+  const tag = noAr
+    ? 'border-white bg-amarelo text-azul'
+    : fundoEscuro
+      ? 'border-bg bg-bg text-azul'
+      : 'border-azul bg-azul text-bg';
+
+  // Blocos automaticos ja se distinguem pela cor `branco`, pela linha
+  // "Só música" e pelo cabecalho do periodo. Nao usar `opacity-*` aqui:
+  // opacidade no card reduz o contraste de tudo que esta dentro dele.
+  const selo = noAr
+    ? `<span class="inline-flex shrink-0 items-center gap-1.5 border-3 border-white bg-amarelo px-2 py-1 font-mono text-[10px] font-bold uppercase tracking-widest text-azul">
+         <span class="block h-2 w-2 animate-live bg-azul"></span>${automatico ? 'Tocando' : 'No ar'}
+       </span>`
+    : '';
+
+  // Sem locutor, o card informa o regime no lugar do nome do apresentador.
+  const linhaApresentador = automatico
+    ? `<p class="mt-2 inline-flex items-center gap-2 font-mono text-[11px] font-bold uppercase tracking-widest ${apoio}">
+         ${ICONE_MUSICA} Só música · sem locutor
+       </p>`
+    : `<p class="mt-2 font-sans text-sm font-semibold ${apoio}">${item.apresentador}</p>`;
+
+  return `
+    <article class="flex flex-col border-azul p-5 transition-transform duration-150 ease-out
+                    hover:rotate-0 ${giro} ${base}">
+      <div class="flex items-start justify-between gap-3">
+        <span class="inline-block border-3 px-2 py-1 font-mono text-[10px] font-bold uppercase leading-none tracking-widest ${tag}">
+          ${item.categoria || 'PROGRAMA'}
+        </span>
+        ${selo}
+      </div>
+
+      <p class="mt-4 font-mono text-sm font-bold tracking-widest">
+        ${item.hora_inicio} — ${item.hora_fim}
+      </p>
+      <h3 class="mt-1 font-display text-xl/[1.05] uppercase md:text-2xl/[1.05]">
+        ${item.programa}
+      </h3>
+      ${linhaApresentador}
+      <p class="mt-3 flex-1 font-sans text-sm leading-relaxed ${apoio}">
+        ${item.descricao || ''}
+      </p>
+    </article>`;
+}
+
 function renderGrade() {
   const alvo = document.getElementById('grade');
   if (!alvo) return;
@@ -169,58 +368,30 @@ function renderGrade() {
     return;
   }
 
-  alvo.innerHTML = doDia
-    .map((item, i) => {
-      const noAr = estaNoAr(item, agora);
+  // Com 24h de grade sao ~12 blocos por dia. Agrupar por periodo evita uma
+  // parede de cards e ajuda a achar o horario de interesse.
+  let indice = 0;
+  alvo.innerHTML = PERIODOS.map((p) => {
+    const doPeriodo = doDia.filter((it) => periodoDe(it.hora_inicio) === p.id);
+    if (!doPeriodo.length) return '';
 
-      // Rotacao alternada e sutil (-1.5deg / +1.5deg), so a partir de `md`.
-      // No mobile o card fica reto: em coluna unica a inclinacao quebra o alinhamento.
-      const giro = noAr ? '' : i % 2 === 0 ? 'md:-rotate-[1.5deg]' : 'md:rotate-[1.5deg]';
+    const temAoVivo = doPeriodo.some((it) => !ehAutomatico(it));
+    const cards = doPeriodo.map((it) => cardPrograma(it, indice++, agora)).join('');
 
-      const base = noAr
-        ? 'bg-verde text-white border-6 shadow-hard-lg'
-        : `${CORES[item.cor] || CORES.branco} border-3 shadow-hard`;
-
-      // O texto de apoio e a tag seguem a luminosidade do fundo do card,
-      // nao a cor especifica: azul, verde e o destaque "no ar" sao escuros
-      // e pedem texto claro; amarelo e branco pedem texto escuro.
-      const fundoEscuro = noAr || item.cor === 'azul' || item.cor === 'verde';
-      const apoio = fundoEscuro ? 'text-white/90' : 'text-tinta/75';
-      const tag = noAr
-        ? 'border-white bg-amarelo text-azul'
-        : fundoEscuro
-          ? 'border-bg bg-bg text-azul'
-          : 'border-azul bg-azul text-bg';
-
-      return `
-        <article class="flex flex-col border-azul p-5 transition-transform duration-150 ease-out
-                        hover:rotate-0 ${giro} ${base}">
-          <div class="flex items-start justify-between gap-3">
-            <span class="inline-block border-3 px-2 py-1 font-mono text-[10px] font-bold uppercase leading-none tracking-widest ${tag}">
-              ${item.categoria || 'PROGRAMA'}
-            </span>
-            ${
-              noAr
-                ? `<span class="inline-flex shrink-0 items-center gap-1.5 border-3 border-white bg-amarelo px-2 py-1 font-mono text-[10px] font-bold uppercase tracking-widest text-azul">
-                     <span class="block h-2 w-2 animate-live bg-azul"></span>No ar
-                   </span>`
-                : ''
-            }
-          </div>
-
-          <p class="mt-4 font-mono text-sm font-bold tracking-widest">
-            ${item.hora_inicio} — ${item.hora_fim}
-          </p>
-          <h3 class="mt-1 font-display text-xl/[1.05] uppercase md:text-2xl/[1.05]">
-            ${item.programa}
-          </h3>
-          <p class="mt-2 font-sans text-sm ${apoio}">${item.apresentador || ''}</p>
-          <p class="mt-3 flex-1 font-sans text-sm leading-relaxed ${apoio}">
-            ${item.descricao || ''}
-          </p>
-        </article>`;
-    })
-    .join('');
+    return `
+      <div class="col-span-full mt-4 flex items-center gap-4 border-b-3 border-azul pb-2 first:mt-0">
+        <span class="font-mono text-[11px] font-bold uppercase tracking-[0.25em] text-azul">
+          ${p.rotulo}
+        </span>
+        <span class="font-mono text-[11px] uppercase tracking-widest text-cinza">${p.faixa}</span>
+        ${
+          temAoVivo
+            ? '<span class="ml-auto border-3 border-azul bg-amarelo px-2 py-1 font-mono text-[10px] font-bold uppercase tracking-widest text-azul">Com locutor</span>'
+            : '<span class="ml-auto font-mono text-[10px] uppercase tracking-widest text-cinza">Só música</span>'
+        }
+      </div>
+      ${cards}`;
+  }).join('');
 }
 
 /* ── API do modulo ─────────────────────────────────────────────── */
@@ -234,6 +405,7 @@ export async function iniciarGrade() {
   }
 
   itens = normalizar(await carregarProgramacao());
+  validarGrade();
   diaSelecionado = agoraNoMS().dia;
 
   renderFiltro();

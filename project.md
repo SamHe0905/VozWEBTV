@@ -166,11 +166,38 @@ Uma planilha, quatro abas. Cabeçalhos na primeira linha, exatamente com estes n
 | `hora_inicio` | `HH:MM` | `07:30` | sim |
 | `hora_fim` | `HH:MM` | `08:30` | sim |
 | `programa` | texto | `MANHÃ NA ESCOLA` | sim |
-| `apresentador` | texto | `Turma do 9º A` | não |
+| `tipo` | `AO VIVO` / `AUTOMATICO` | `AO VIVO` | sim |
+| `apresentador` | texto | `Turma do 9º A` | só se `AO VIVO` |
 | `descricao` | texto | `Notícias e música para começar o dia.` | não |
 | `categoria` | texto | `NOTÍCIAS` | não |
 | `cor` | `verde` / `azul` / `amarelo` / `branco` | `amarelo` | não |
 | `ativo` | `SIM` / `NAO` | `SIM` | sim |
+
+#### Operação 24 horas
+
+A rádio fica **no ar 24h por dia**, mas **não com locutor 24h**. A coluna `tipo`
+separa os dois regimes:
+
+- **`AO VIVO`** — tem locutor no estúdio. `apresentador` preenchido. O site
+  mostra o nome do programa e de quem apresenta.
+- **`AUTOMATICO`** — só música, sem locução, alimentada pelo script de playlist
+  do AzuraCast. `apresentador` vazio. O site mostra "Só música · sem locutor" e,
+  quando o AzuraCast estiver conectado, o nome da faixa que está tocando.
+
+Na grade de demonstração isso dá **~14% ao vivo e ~86% automático** — 3 a 4 janelas
+curtas de locução por dia letivo, ancoradas na rotina da escola (entrada, intervalo,
+início da tarde, saída), e um bloco noturno em alguns dias.
+
+**Regras da cobertura 24h:**
+- A grade de cada dia deve cobrir de `00:00` a `00:00` **sem buraco**: o `hora_fim`
+  de um bloco é igual ao `hora_inicio` do seguinte.
+- O último bloco do dia termina em `00:00`.
+- Blocos podem **cruzar a meia-noite** (ex.: `SÁBADO 23:00–01:00`). O site entende
+  isso: às `00:30` de domingo esse bloco ainda aparece como no ar.
+- Se houver **sobreposição**, vence o bloco que começou por último.
+- `schedule.js` roda `validarGrade()` no carregamento e escreve no console do
+  navegador todo buraco e toda sobreposição encontrados, dia a dia. Nada quebra —
+  é um aviso para quem cuida da planilha.
 
 ### Aba `noticias`
 `data` (`DD/MM/AAAA`), `titulo`, `resumo`, `imagem` (URL), `link`, `destaque` (`SIM`/`NAO`), `ativo`.

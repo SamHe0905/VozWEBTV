@@ -9,7 +9,7 @@
 
 import { AZURACAST, MODO_DEMO, SITE } from './config.js';
 import { NOW_PLAYING_DEMO } from './mock.js';
-import { programaAtual, proximoPrograma } from './schedule.js';
+import { programaAtual, proximoPrograma, ehAutomatico } from './schedule.js';
 
 const el = (id) => document.getElementById(id);
 
@@ -93,17 +93,28 @@ function escreverNowPlaying({ titulo, meta }) {
  */
 async function atualizarNowPlaying() {
   const doGrade = programaAtual();
+  const automatico = doGrade ? ehAutomatico(doGrade) : true;
 
   if (!MODO_DEMO && AZURACAST.nowPlaying) {
     try {
       const r = await fetch(AZURACAST.nowPlaying, { cache: 'no-store' });
       const d = await r.json();
       const musica = d?.now_playing?.song?.text;
-      const programa = d?.live?.is_live ? d.live.streamer_name : doGrade?.programa;
+      const locutorAoVivo = d?.live?.is_live ? d.live.streamer_name : null;
+
+      // Bloco AO VIVO: o programa e' o titulo, a musica vira apoio.
+      // Bloco AUTOMATICO: a musica e' o titulo — nao ha locutor a anunciar.
+      if (locutorAoVivo || (doGrade && !automatico)) {
+        escreverNowPlaying({
+          titulo: doGrade ? doGrade.programa : locutorAoVivo,
+          meta: musica ? `Ao vivo · ${musica}` : `Ao vivo · ${locutorAoVivo || SITE.nome}`,
+        });
+        return;
+      }
       if (musica) {
         escreverNowPlaying({
           titulo: musica,
-          meta: programa ? `${programa} · ao vivo` : 'Voz WebTV · ao vivo',
+          meta: doGrade ? `${doGrade.programa} · só música` : 'Programação musical',
         });
         return;
       }
@@ -112,10 +123,16 @@ async function atualizarNowPlaying() {
     }
   }
 
-  if (doGrade) {
+  if (doGrade && !automatico) {
     escreverNowPlaying({
       titulo: doGrade.programa,
-      meta: `${doGrade.hora_inicio} — ${doGrade.hora_fim} · ${doGrade.apresentador || 'Voz WebTV'}`,
+      meta: `${doGrade.hora_inicio} — ${doGrade.hora_fim} · ${doGrade.apresentador}`,
+    });
+  } else if (doGrade) {
+    // Sem AzuraCast conectado nao ha nome de faixa: mostra o bloco musical.
+    escreverNowPlaying({
+      titulo: doGrade.programa,
+      meta: `${doGrade.hora_inicio} — ${doGrade.hora_fim} · só música`,
     });
   } else if (MODO_DEMO) {
     escreverNowPlaying({
@@ -126,14 +143,14 @@ async function atualizarNowPlaying() {
     escreverNowPlaying({ titulo: SITE.nome, meta: 'Programação musical' });
   }
 
-  atualizarHero(doGrade);
+  atualizarHero(doGrade, automatico);
 }
 
 /**
  * Bloco verde do hero: mostra o programa no ar; fora do horario de
  * transmissao, mostra o proximo — nunca fica generico a toa.
  */
-function atualizarHero(noAr) {
+function atualizarHero(noAr, automatico) {
   const hp = el('hero-programa');
   const hh = el('hero-horario');
   const selo = el('hero-selo');
@@ -141,8 +158,10 @@ function atualizarHero(noAr) {
 
   if (noAr) {
     hp.textContent = noAr.programa;
-    hh.textContent = `${noAr.hora_inicio} — ${noAr.hora_fim} · ${noAr.apresentador || ''}`;
-    if (selo) selo.textContent = 'Agora na rádio';
+    hh.textContent = automatico
+      ? `${noAr.hora_inicio} — ${noAr.hora_fim} · só música`
+      : `${noAr.hora_inicio} — ${noAr.hora_fim} · ${noAr.apresentador}`;
+    if (selo) selo.textContent = automatico ? 'Tocando agora' : 'Ao vivo agora';
     return;
   }
 
