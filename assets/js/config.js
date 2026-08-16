@@ -8,8 +8,14 @@
    em `assets/js/mock.js` e nao faz nenhuma chamada de rede.
    ═══════════════════════════════════════════════════════════════════ */
 
-/** Liga os dados de demonstracao. Trocar para `false` na Fase 3/4. */
-export const MODO_DEMO = true;
+/**
+ * `true` = ignora o banco e usa os dados de `mock.js`.
+ * `false` = le do Supabase, caindo em `mock.js` se o banco falhar.
+ *
+ * Ja esta em `false`: assim que `supabase/schema.sql` for rodado, o site
+ * passa a ler do banco sozinho, sem precisar mexer aqui de novo.
+ */
+export const MODO_DEMO = false;
 
 /* ── AzuraCast (audio ao vivo) ─────────────────────────────────────
    Preencher quando a instancia estiver no ar. Ver memory.md > Pendencias. */
@@ -31,10 +37,14 @@ export const AZURACAST = {
 
    NUNCA colocar aqui a chave `service_role`: ela ignora todo o RLS. */
 export const SUPABASE = {
-  /** Ex.: https://abcdefghijk.supabase.co */
-  url: '',
-  /** Chave "anon public" — a longa que comeca com "eyJ..." */
-  anonKey: '',
+  url: 'https://bkmjzyrkxhfahoxcjiby.supabase.co',
+  /**
+   * Chave PUBLICAVEL (formato novo do Supabase, prefixo `sb_publishable_`).
+   * Equivale a antiga `anon` e e' feita para ficar no codigo do cliente —
+   * com ela da' para LER o que o RLS permite, nunca para escrever.
+   * A chave `sb_secret_` NUNCA pode aparecer aqui.
+   */
+  anonKey: 'sb_publishable_5qaU-gKFPbqVXo9zqBkSFQ_APbA_n1k',
 };
 
 /* ── WebTV (YouTube) ───────────────────────────────────────────────
