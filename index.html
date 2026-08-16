@@ -482,7 +482,23 @@
 
         <div class="mt-12 flex flex-col gap-3 border-t-3 border-bg/25 pt-6 font-mono text-[10px] uppercase tracking-widest text-bg/70 md:flex-row md:items-center md:justify-between">
           <p>© 2026 Voz WebTV · Escola Estadual Teotônio Vilela</p>
-          <p>Feito por alunos, na escola pública</p>
+          <p class="flex items-center gap-2">
+            Feito por alunos, na escola pública
+            <!-- Acesso ao painel: discreto de proposito, para nao poluir o site
+                 do aluno. Isto NAO e' seguranca — quem protege sao o login e o
+                 RLS. Mantido legivel e alcancavel por teclado justamente porque
+                 esconder de verdade so atrapalharia quem tem direito de entrar. -->
+            <a
+              href="/admin"
+              rel="nofollow"
+              class="border-3 border-bg/30 px-1.5 py-0.5 leading-none text-bg/70 transition-colors hover:border-amarelo hover:bg-amarelo hover:text-azul"
+            >
+              <span aria-hidden="true">·</span>
+              <!-- Discreto para os olhos, nao para quem usa leitor de tela:
+                   um "·" sozinho seria anunciado como "ponto", sem sentido. -->
+              <span class="sr-only">Painel da equipe</span>
+            </a>
+          </p>
         </div>
       </div>
 

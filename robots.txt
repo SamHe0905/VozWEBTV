@@ -1,4 +1,9 @@
 User-agent: *
 Allow: /
 
+# Painel interno. Isto so' pede aos buscadores que nao indexem —
+# nao impede ninguem de acessar. Quem protege sao o login e o RLS.
+Disallow: /admin
+Disallow: /admin.html
+
 Sitemap: https://voz-webtv.vercel.app/sitemap.xml
