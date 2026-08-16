@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0B2E5C" />
+    <!-- Painel interno: nao deve aparecer em busca. -->
+    <meta name="robots" content="noindex, nofollow" />
+
+    <title>Painel — Voz WebTV</title>
+
+    <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml" />
+    <link rel="preload" href="/assets/fonts/archivo-black-latin.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/assets/fonts/archivo-latin.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/assets/fonts/jetbrains-mono-latin.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="stylesheet" href="/assets/css/fonts.css" />
+    <link rel="stylesheet" href="/assets/css/styles.css" />
+  </head>
+
+  <body>
+    <!-- ═══════════════════════════════════════════════════════════════
+         TELA DE LOGIN
+         ═══════════════════════════════════════════════════════════ -->
+    <section id="tela-login" class="flex min-h-screen items-center justify-center p-4">
+      <div class="w-full max-w-md border-6 border-azul bg-paper shadow-hard-lg">
+        <div class="border-b-6 border-azul bg-azul px-6 py-5">
+          <p class="font-display text-2xl uppercase leading-none text-bg">
+            Voz<span class="text-amarelo">WebTV</span>
+          </p>
+          <p class="mt-1 font-mono text-[11px] uppercase tracking-widest text-amarelo">
+            Painel da equipe
+          </p>
+        </div>
+
+        <form id="form-login" class="space-y-5 p-6" novalidate>
+          <div>
+            <label for="login-email" class="mb-2 block font-mono text-xs font-bold uppercase tracking-widest text-azul">
+              E-mail
+            </label>
+            <input
+              id="login-email"
+              name="email"
+              type="email"
+              autocomplete="username"
+              required
+              class="w-full border-3 border-azul bg-bg px-4 py-3 font-sans text-base text-tinta focus:border-verde"
+            />
+          </div>
+
+          <div>
+            <label for="login-senha" class="mb-2 block font-mono text-xs font-bold uppercase tracking-widest text-azul">
+              Senha
+            </label>
+            <input
+              id="login-senha"
+              name="senha"
+              type="password"
+              autocomplete="current-password"
+              required
+              class="w-full border-3 border-azul bg-bg px-4 py-3 font-sans text-base text-tinta focus:border-verde"
+            />
+          </div>
+
+          <p id="login-erro" class="hidden border-3 border-azul bg-amarelo px-4 py-3 font-mono text-xs font-bold uppercase leading-relaxed tracking-wider text-azul"></p>
+
+          <button id="btn-entrar" type="submit" class="btn btn-primario w-full">Entrar →</button>
+
+          <p class="border-t-3 border-azul/20 pt-4 font-sans text-xs leading-relaxed text-cinza">
+            As contas são criadas pela coordenação. Se você não consegue entrar,
+            procure quem cuida da rádio — não existe cadastro automático.
+          </p>
+        </form>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         PAINEL
+         ═══════════════════════════════════════════════════════════ -->
+    <div id="tela-painel" class="hidden min-h-screen flex-col">
+      <header class="sticky top-0 z-40 border-b-6 border-azul bg-bg">
+        <div class="flex items-stretch">
+          <span class="flex shrink-0 items-center gap-3 border-r-6 border-azul bg-azul px-4 py-3">
+            <span class="font-display text-base uppercase leading-none text-bg md:text-xl">
+              Voz<span class="text-amarelo">WebTV</span>
+            </span>
+            <span class="hidden border-3 border-amarelo px-2 py-1 font-mono text-[10px] font-bold uppercase tracking-widest text-amarelo sm:inline">
+              Painel
+            </span>
+          </span>
+
+          <div class="ml-auto flex items-center gap-3 px-4">
+            <span id="usuario-email" class="hidden font-mono text-xs uppercase tracking-widest text-cinza md:inline"></span>
+            <button id="btn-sair" type="button" class="border-3 border-azul bg-paper px-4 py-2 font-mono text-xs font-bold uppercase tracking-widest text-azul transition-colors hover:bg-amarelo">
+              Sair
+            </button>
+          </div>
+        </div>
+
+        <!-- Abas -->
+        <nav class="sem-scrollbar flex overflow-x-auto border-t-3 border-azul" aria-label="Seções do painel">
+          <button data-aba="programacao" class="aba shrink-0 border-r-3 border-azul px-5 py-3 font-mono text-xs font-bold uppercase tracking-widest">Programação</button>
+          <button data-aba="noticias" class="aba shrink-0 border-r-3 border-azul px-5 py-3 font-mono text-xs font-bold uppercase tracking-widest">Notícias</button>
+          <button data-aba="equipe" class="aba shrink-0 border-r-3 border-azul px-5 py-3 font-mono text-xs font-bold uppercase tracking-widest">Equipe</button>
+          <button data-aba="config" class="aba shrink-0 border-r-3 border-azul px-5 py-3 font-mono text-xs font-bold uppercase tracking-widest">Ajustes</button>
+        </nav>
+      </header>
+
+      <main class="container-site flex-1 py-8">
+        <!-- ── PROGRAMAÇÃO ─────────────────────────────────────────── -->
+        <section id="painel-programacao" class="painel">
+          <div class="mb-6 flex flex-col gap-4 border-b-6 border-azul pb-4 md:flex-row md:items-end md:justify-between">
+            <div>
+              <span class="rotulo text-verde-dark">Grade 24h</span>
+              <h1 class="mt-1 font-display text-3xl/[0.9] uppercase tracking-tight text-azul md:text-5xl/[0.9]">
+                Programação
+              </h1>
+            </div>
+            <button id="btn-novo-bloco" type="button" class="btn btn-primario self-start md:self-auto">
+              + Novo bloco
+            </button>
+          </div>
+
+          <!-- Conferência da cobertura 24h -->
+          <div id="cobertura" class="mb-6" aria-live="polite"></div>
+
+          <div class="sem-scrollbar -mx-4 mb-6 overflow-x-auto px-4 md:mx-0 md:px-0">
+            <div id="filtro-dias-admin" class="flex min-w-max gap-2" role="tablist" aria-label="Dia da semana"></div>
+          </div>
+
+          <div id="lista-programacao" class="space-y-3" aria-live="polite"></div>
+        </section>
+
+        <!-- ── NOTÍCIAS ────────────────────────────────────────────── -->
+        <section id="painel-noticias" class="painel hidden">
+          <div class="mb-6 flex flex-col gap-4 border-b-6 border-azul pb-4 md:flex-row md:items-end md:justify-between">
+            <div>
+              <span class="rotulo text-verde-dark">Conteúdo</span>
+              <h1 class="mt-1 font-display text-3xl/[0.9] uppercase tracking-tight text-azul md:text-5xl/[0.9]">
+                Notícias
+              </h1>
+            </div>
+            <button id="btn-nova-noticia" type="button" class="btn btn-primario self-start md:self-auto">
+              + Nova notícia
+            </button>
+          </div>
+          <div id="lista-noticias-admin" class="space-y-3" aria-live="polite"></div>
+        </section>
+
+        <!-- ── EQUIPE ──────────────────────────────────────────────── -->
+        <section id="painel-equipe" class="painel hidden">
+          <div class="mb-6 flex flex-col gap-4 border-b-6 border-azul pb-4 md:flex-row md:items-end md:justify-between">
+            <div>
+              <span class="rotulo text-verde-dark">Quem faz</span>
+              <h1 class="mt-1 font-display text-3xl/[0.9] uppercase tracking-tight text-azul md:text-5xl/[0.9]">
+                Equipe
+              </h1>
+            </div>
+            <button id="btn-nova-pessoa" type="button" class="btn btn-primario self-start md:self-auto">
+              + Nova pessoa
+            </button>
+          </div>
+          <div class="mb-6 border-3 border-azul bg-amarelo px-4 py-3 font-sans text-sm leading-relaxed text-azul">
+            <strong>Não cadastre dado pessoal.</strong> Esta lista aparece no site público.
+            Só nome, função e turma — nunca endereço, telefone, CPF ou matrícula.
+          </div>
+          <div id="lista-equipe-admin" class="space-y-3" aria-live="polite"></div>
+        </section>
+
+        <!-- ── AJUSTES ─────────────────────────────────────────────── -->
+        <section id="painel-config" class="painel hidden">
+          <div class="mb-6 border-b-6 border-azul pb-4">
+            <span class="rotulo text-verde-dark">Textos do site</span>
+            <h1 class="mt-1 font-display text-3xl/[0.9] uppercase tracking-tight text-azul md:text-5xl/[0.9]">
+              Ajustes
+            </h1>
+          </div>
+          <div id="lista-config" class="space-y-4" aria-live="polite"></div>
+        </section>
+      </main>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         FORMULÁRIO (painel lateral)
+         ═══════════════════════════════════════════════════════════ -->
+    <div id="gaveta" class="fixed inset-0 z-50 hidden" role="dialog" aria-modal="true" aria-labelledby="gaveta-titulo">
+      <div id="gaveta-fundo" class="absolute inset-0 bg-azul/70"></div>
+      <div class="absolute inset-y-0 right-0 flex w-full max-w-lg flex-col border-l-6 border-azul bg-bg">
+        <div class="flex items-center justify-between border-b-6 border-azul bg-azul px-5 py-4">
+          <h2 id="gaveta-titulo" class="font-display text-xl uppercase leading-none text-bg"></h2>
+          <button id="btn-fechar-gaveta" type="button" class="border-3 border-bg bg-amarelo px-3 py-2 font-mono text-xs font-bold uppercase tracking-widest text-azul">
+            Fechar ✕
+          </button>
+        </div>
+
+        <form id="gaveta-form" class="flex-1 space-y-5 overflow-y-auto p-5" novalidate></form>
+
+        <div class="flex gap-3 border-t-6 border-azul bg-paper p-5">
+          <button id="btn-salvar" type="submit" form="gaveta-form" class="btn btn-primario flex-1">Salvar</button>
+          <button id="btn-excluir" type="button" class="btn border-azul bg-paper text-azul">Excluir</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Avisos de sucesso/erro -->
+    <div id="alertas" class="fixed bottom-4 left-1/2 z-[70] w-[min(92vw,32rem)] -translate-x-1/2 space-y-2" aria-live="assertive"></div>
+
+    <script type="module" src="/assets/js/admin.js"></script>
+  </body>
+</html>

@@ -151,8 +151,33 @@ export function programaAtual() {
  * linhas na mao.
  */
 export function validarGrade(lista = itens) {
+  const porDia = conferirCobertura(lista);
   const avisos = [];
+  for (const dia of DIAS) {
+    for (const p of porDia[dia]) avisos.push(`${dia}: ${p}`);
+  }
 
+  if (avisos.length) {
+    console.warn(
+      `[Voz WebTV] A grade nao cobre as 24h em ${avisos.length} ponto(s):\n  • ` +
+        avisos.join('\n  • ')
+    );
+  }
+  return avisos;
+}
+
+/**
+ * Nucleo da conferencia 24h: devolve `{ DIA: [problemas] }`, dia vazio
+ * significa dia certo.
+ *
+ * Vive aqui e e' importado tambem pelo painel admin. Ter duas copias
+ * desta logica seria pedir para elas divergirem — e ela e' justamente a
+ * checagem que impede a radio de ficar muda sem ninguem notar.
+ *
+ * `lista` deve conter apenas os blocos ATIVOS; quem chama decide isso,
+ * porque o site ja recebe filtrado e o painel precisa mostrar os dois.
+ */
+export function conferirCobertura(lista) {
   // Cada dia recebe os intervalos que realmente tocam nele. Um bloco que
   // cruza a meia-noite (ex.: 23:00–01:00) contribui em DOIS dias: o trecho
   // ate 00:00 no proprio dia, e o resto no dia seguinte.
@@ -172,29 +197,27 @@ export function validarGrade(lista = itens) {
     }
   }
 
+  const porDia = {};
   for (const dia of DIAS) {
     const faixas = cobertura[dia].sort((a, b) => a.ini - b.ini);
+    const problemas = [];
+
     if (!faixas.length) {
-      avisos.push(`${dia}: nenhum programa cadastrado`);
+      porDia[dia] = ['nenhum programa cadastrado'];
       continue;
     }
 
     let coberto = 0;
     for (const f of faixas) {
-      if (f.ini > coberto) avisos.push(`${dia}: buraco entre ${fmt(coberto)} e ${fmt(f.ini)}`);
-      else if (f.ini < coberto) avisos.push(`${dia}: "${f.nome}" (${fmt(f.ini)}) sobrepoe o bloco anterior`);
+      if (f.ini > coberto) problemas.push(`buraco entre ${fmt(coberto)} e ${fmt(f.ini)}`);
+      else if (f.ini < coberto) problemas.push(`"${f.nome}" (${fmt(f.ini)}) sobrepoe o bloco anterior`);
       coberto = Math.max(coberto, f.fim);
     }
-    if (coberto < 1440) avisos.push(`${dia}: nada no ar entre ${fmt(coberto)} e 00:00`);
-  }
+    if (coberto < 1440) problemas.push(`nada no ar entre ${fmt(coberto)} e 00:00`);
 
-  if (avisos.length) {
-    console.warn(
-      `[Voz WebTV] A grade nao cobre as 24h em ${avisos.length} ponto(s):\n  • ` +
-        avisos.join('\n  • ')
-    );
+    porDia[dia] = problemas;
   }
-  return avisos;
+  return porDia;
 }
 
 function fmt(min) {
