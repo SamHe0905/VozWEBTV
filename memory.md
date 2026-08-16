@@ -23,15 +23,37 @@ Data: 15/08/2026.
 | Repositório | ✅ github.com/SamHe0905/VozWEBTV (público) |
 | Keep-alive GitHub Action | ✅ **testado, HTTP 200 em 4s** |
 | Keep-alive Vercel cron | ⬜ depende do deploy |
-| Deploy Vercel | ⬜ falhou por `outputDirectory`, já corrigido no repo |
-| **Login no painel** | ⬜ **bloqueado: `Enable Email provider` desligado** |
+| Deploy Vercel | ⬜ em conta separada — ver aviso abaixo |
+| Login por e-mail | ✅ religado (`external.email: true`) |
+| Painel — aba Acessos | ⬜ exige `/api/contas`, só roda publicado |
 | Stream AzuraCast | ⬜ URL não existe ainda |
 
-### O gargalo
-`external.email = false` no Supabase. Alguém desligou o **provedor de e-mail**
-inteiro achando que estava fechando só o cadastro — são dois botões diferentes
-na mesma tela. Enquanto estiver assim, ninguém entra no painel, e login e
-gravação seguem sem teste de ponta a ponta.
+### ⚠️ A Vercel está em outra conta
+O deploy vive numa **conta Vercel própria do projeto**, não na conta pessoal
+do Samuel (`sam-he99-s-projects`). Decisão deliberada: a rádio precisa
+sobreviver a quem sair da escola — mesma lógica de manter a planilha na conta
+institucional.
+
+Consequência prática: quem estiver com o `vercel` CLI logado na conta pessoal
+**não enxerga este projeto** e vai concluir, errado, que ele não existe.
+As quatro variáveis de ambiente (`SUPABASE_URL`, `SUPABASE_ANON_KEY`,
+`SUPABASE_SERVICE_ROLE_KEY`, `CRON_SECRET`) moram lá, não na pessoal.
+
+O repositório, esse sim, está na conta pessoal do GitHub
+(`SamHe0905/VozWEBTV`) — então a Vercel precisou de autorização do GitHub App
+para enxergá-lo.
+
+### O que falta
+1. **Deploy na Vercel** (conta do projeto) — `outputDirectory` já corrigido.
+2. **URL do stream do AzuraCast** — última peça para a rádio tocar.
+3. **Teste de login e gravação** — só o Samuel pode fazer; eu não manipulo senha.
+
+### Armadilha já vivida, para não repetir
+No Supabase, **`Enable Email provider`** e **`Allow new users to sign up`** são
+dois botões diferentes na mesma tela. Desligar o primeiro tranca todo mundo
+para fora do painel. O correto: primeiro **ligado**, segundo **desligado**.
+Conferir pelo endpoint `/auth/v1/settings`, que devolve `external.email` e
+`disable_signup` — a tela do painel é fácil de ler errado.
 
 ### Como a rádio opera (decisão do dia 15/08)
 A rádio fica **no ar 24h**, mas **não tem locutor 24h**. A trilha é música
