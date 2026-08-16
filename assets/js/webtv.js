@@ -34,8 +34,8 @@ function renderSemTransmissao(container, legenda) {
   if (legenda) legenda.textContent = 'Transmissão em vídeo · toda quinta, às 14h';
 }
 
-function renderFacade(container, legenda) {
-  const thumb = `https://i.ytimg.com/vi/${WEBTV.videoId}/maxresdefault.jpg`;
+function renderFacade(container, legenda, videoId) {
+  const thumb = `https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg`;
 
   container.innerHTML = `
     <button type="button" class="group absolute inset-0 flex items-center justify-center bg-tinta"
@@ -52,7 +52,7 @@ function renderFacade(container, legenda) {
   container.querySelector('button').addEventListener('click', () => {
     container.innerHTML = `
       <iframe class="absolute inset-0 h-full w-full"
-        src="https://www.youtube-nocookie.com/embed/${WEBTV.videoId}?autoplay=1&rel=0&modestbranding=1"
+        src="https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1"
         title="${WEBTV.titulo}" allow="accelerometer; autoplay; encrypted-media; picture-in-picture"
         allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>`;
   });
@@ -60,14 +60,24 @@ function renderFacade(container, legenda) {
   if (legenda) legenda.textContent = WEBTV.descricao || '';
 }
 
-export function iniciarWebTV() {
+/**
+ * @param {object} [cfg] Linhas da tabela `config` do banco. Quando vem
+ *   preenchida, `youtube_id` e `youtube_ativo` mandam mais que o config.js:
+ *   e' assim que a equipe troca a transmissao sem mexer em codigo.
+ */
+export function iniciarWebTV(cfg = {}) {
   const container = document.getElementById('webtv-container');
   const legenda = document.getElementById('webtv-legenda');
   if (!container) return;
 
-  if (!WEBTV.ativo || !WEBTV.videoId) {
+  const videoId = (cfg.youtube_id || WEBTV.videoId || '').trim();
+  const ativo = cfg.youtube_ativo !== undefined
+    ? String(cfg.youtube_ativo).trim().toUpperCase() === 'SIM'
+    : WEBTV.ativo;
+
+  if (!ativo || !videoId) {
     renderSemTransmissao(container, legenda);
     return;
   }
-  renderFacade(container, legenda);
+  renderFacade(container, legenda, videoId);
 }

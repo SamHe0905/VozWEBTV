@@ -5,7 +5,7 @@
    AzuraCast nao esta disponivel.
    ═══════════════════════════════════════════════════════════════════ */
 
-import { CONFIG_SITE } from './mock.js';
+import { lerConfig } from './dados.js';
 import { iniciarGrade } from './schedule.js';
 import { iniciarPlayer } from './player.js';
 import { iniciarNoticias, iniciarEquipe } from './news.js';
@@ -65,11 +65,23 @@ function iniciarMenu() {
 
 /* ── Entrada ───────────────────────────────────────────────────── */
 
+/** Frase curta no cabecalho, editavel pela tabela `config`. */
+function aplicarAvisoTopo(texto) {
+  const alvo = document.getElementById('aviso-topo');
+  if (alvo && texto) alvo.textContent = texto;
+}
+
 async function iniciar() {
-  montarMarquee('marquee-topo', CONFIG_SITE.marquee_texto, 'text-verde');
-  montarMarquee('marquee-rodape', CONFIG_SITE.marquee_rodape, 'text-amarelo');
   iniciarMenu();
-  iniciarWebTV();
+
+  // A tabela `config` guarda o que a equipe edita sem mexer em codigo:
+  // letreiros, aviso do topo e qual video a WebTV mostra.
+  const cfg = await lerConfig();
+
+  montarMarquee('marquee-topo', cfg.marquee_texto, 'text-verde');
+  montarMarquee('marquee-rodape', cfg.marquee_rodape, 'text-amarelo');
+  aplicarAvisoTopo(cfg.aviso_topo);
+  iniciarWebTV(cfg);
 
   // A grade precisa estar pronta antes do player consultar o programa atual.
   await iniciarGrade();
