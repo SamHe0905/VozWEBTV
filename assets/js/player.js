@@ -7,9 +7,9 @@
    em config.js para ele passar a tocar de verdade.
    ═══════════════════════════════════════════════════════════════════ */
 
-import { AZURACAST, MODO_DEMO, SITE } from './config.js?v=202608160211';
-import { NOW_PLAYING_DEMO } from './mock.js?v=202608160211';
-import { programaAtual, proximoPrograma, ehAutomatico } from './schedule.js?v=202608160211';
+import { AZURACAST, MODO_DEMO, SITE } from './config.js?v=202608160215';
+import { NOW_PLAYING_DEMO } from './mock.js?v=202608160215';
+import { programaAtual, proximoPrograma, ehAutomatico } from './schedule.js?v=202608160215';
 
 const el = (id) => document.getElementById(id);
 

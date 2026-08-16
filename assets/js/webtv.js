@@ -7,7 +7,7 @@
    Dominio: youtube-nocookie.com (privacidade dos alunos).
    ═══════════════════════════════════════════════════════════════════ */
 
-import { WEBTV } from './config.js?v=202608160211';
+import { WEBTV } from './config.js?v=202608160215';
 
 function botaoPlay() {
   return `

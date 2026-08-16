@@ -9,11 +9,11 @@
    descobrir pelo silencio no ar.
    ═══════════════════════════════════════════════════════════════════ */
 
-import { entrar, sair, estaLogado, emailLogado, sessao, listar, criar, atualizar, apagar } from './auth.js?v=202608160211';
-import { limparCache } from './dados.js?v=202608160211';
+import { entrar, sair, estaLogado, emailLogado, sessao, listar, criar, atualizar, apagar } from './auth.js?v=202608160215';
+import { limparCache } from './dados.js?v=202608160215';
 // Mesma funcao que o site usa. Uma implementacao so: duas copias desta
 // checagem divergiriam, e e' ela que impede a radio de ficar muda.
-import { conferirCobertura } from './schedule.js?v=202608160211';
+import { conferirCobertura } from './schedule.js?v=202608160215';
 
 const $ = (s) => document.querySelector(s);
 const DIAS = ['DOMINGO', 'SEGUNDA', 'TERÇA', 'QUARTA', 'QUINTA', 'SEXTA', 'SÁBADO'];

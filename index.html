@@ -33,8 +33,8 @@
     <link rel="preload" href="/assets/fonts/archivo-latin.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="/assets/fonts/jetbrains-mono-latin.woff2" as="font" type="font/woff2" crossorigin />
 
-    <link rel="stylesheet" href="/assets/css/fonts.css?v=202608160211" />
-    <link rel="stylesheet" href="/assets/css/styles.css?v=202608160211" />
+    <link rel="stylesheet" href="/assets/css/fonts.css?v=202608160215" />
+    <link rel="stylesheet" href="/assets/css/styles.css?v=202608160215" />
 
     <script type="application/ld+json">
       {
@@ -222,7 +222,13 @@
         </div>
       </div>
 
-      <audio id="audio" preload="none" crossorigin="anonymous"></audio>
+      <!-- SEM `crossorigin`: o atributo obriga o navegador a fazer uma
+           requisicao CORS, e streams de radio quase nunca mandam o
+           cabecalho `Access-Control-Allow-Origin`. Com ele, o audio nao
+           toca e nao ha erro obvio. So faria sentido se o site fosse ler
+           os dados do audio (Web Audio API), o que nao acontece: o
+           equalizador do player e' animacao de CSS. -->
+      <audio id="audio" preload="none"></audio>
     </section>
 
     <!-- ═══════════════════════════════════════════════════════════════
@@ -518,6 +524,6 @@
       </p>
     </footer>
 
-    <script type="module" src="/assets/js/main.js?v=202608160211"></script>
+    <script type="module" src="/assets/js/main.js?v=202608160215"></script>
   </body>
 </html>
