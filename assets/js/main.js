@@ -71,6 +71,42 @@ function aplicarAvisoTopo(texto) {
   if (alvo && texto) alvo.textContent = texto;
 }
 
+/** Vazio, "#" ou "-" sao placeholders: nao servem como destino. */
+const temDestino = (v) => {
+  const s = String(v || '').trim();
+  return s !== '' && s !== '#' && s !== '-';
+};
+
+/**
+ * Preenche os links marcados com `data-link` usando a tabela `config`.
+ *
+ * Quem nao tem URL cadastrada e' REMOVIDO, nao deixado com href="#".
+ * Um "#" navega para o topo do documento — o leitor clica em "Ler mais"
+ * ou "Participe" e e' jogado de volta ao inicio da pagina, sem entender
+ * o que aconteceu.
+ */
+function aplicarLinks(cfg) {
+  document.querySelectorAll('[data-link]').forEach((a) => {
+    const chave = a.dataset.link;
+    const valor = cfg[chave];
+    const item = a.closest('li') || a;
+
+    if (!temDestino(valor)) {
+      item.remove();
+      return;
+    }
+
+    // `email_contato` guarda um e-mail, nao uma URL.
+    a.href = chave === 'email_contato' ? `mailto:${String(valor).trim()}` : String(valor).trim();
+    if (a.href.startsWith('http')) {
+      a.target = '_blank';
+      a.rel = 'noopener noreferrer';
+    }
+    a.hidden = false;
+    item.hidden = false;
+  });
+}
+
 async function iniciar() {
   iniciarMenu();
 
@@ -81,6 +117,7 @@ async function iniciar() {
   montarMarquee('marquee-topo', cfg.marquee_texto, 'text-verde');
   montarMarquee('marquee-rodape', cfg.marquee_rodape, 'text-amarelo');
   aplicarAvisoTopo(cfg.aviso_topo);
+  aplicarLinks(cfg);
   iniciarWebTV(cfg);
 
   // A grade precisa estar pronta antes do player consultar o programa atual.

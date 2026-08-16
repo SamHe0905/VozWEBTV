@@ -8,6 +8,15 @@ import { lerNoticias, lerEquipe, ehSim } from './dados.js';
 
 const ativos = (linhas) => linhas.filter((l) => l && ehSim(l.ativo));
 
+/**
+ * A URL leva a algum lugar de verdade?
+ * Vazio, "#" ou "-" sao placeholders que voltariam ao topo da pagina.
+ */
+export function temLink(url) {
+  const v = String(url || '').trim();
+  return v !== '' && v !== '#' && v !== '-';
+}
+
 /** Iniciais do nome, para o avatar tipografico da equipe. */
 function iniciais(nome) {
   return String(nome)
@@ -46,9 +55,15 @@ function cardNoticia(n, destaque) {
         <p class="font-mono text-xs font-bold uppercase tracking-widest ${apoio}">${n.data || ''}</p>
         <h3 class="mt-2 font-display ${titulo} uppercase">${n.titulo}</h3>
         <p class="mt-3 flex-1 font-sans text-sm leading-relaxed ${apoio}">${n.resumo || ''}</p>
-        <a href="${n.link || '#'}" class="link-grosso mt-5 self-start font-mono text-xs font-bold uppercase tracking-widest ${
-          destaque ? 'text-amarelo' : 'text-azul'
-        }">Ler mais →</a>
+        ${
+          // "Ler mais" so' existe quando ha' para onde ir. Um href="#" leva o
+          // leitor de volta ao topo da pagina, que e' pior que nao ter link.
+          temLink(n.link)
+            ? `<a href="${esc(n.link)}" class="link-grosso mt-5 self-start font-mono text-xs font-bold uppercase tracking-widest ${
+                destaque ? 'text-amarelo' : 'text-azul'
+              }">Ler mais →</a>`
+            : ''
+        }
       </div>
     </article>`;
 }

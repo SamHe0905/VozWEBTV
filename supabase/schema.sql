@@ -260,7 +260,9 @@ values
   ('aviso_topo', 'No ar 24 horas por dia, todos os dias', 'Frase curta no cabeçalho, ao lado do menu'),
   ('youtube_id', '', 'ID do vídeo/live do YouTube (só o código, não a URL inteira)'),
   ('youtube_ativo', 'NAO', 'SIM mostra o vídeo; NAO mostra o aviso de sem transmissão'),
-  ('instagram_url', '', 'Link do Instagram da rádio'),
+  ('instagram_url', '', 'Link do Instagram da rádio. Deixe vazio para o item sumir do rodapé'),
+  ('youtube_url', '', 'Link do canal no YouTube. Deixe vazio para o item sumir'),
+  ('spotify_url', '', 'Link no Spotify. Deixe vazio para o item sumir'),
   ('email_contato', 'contato@vozwebtv.com.br', 'E-mail exibido no rodapé');
 
 

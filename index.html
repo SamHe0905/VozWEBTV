@@ -328,7 +328,7 @@
                 Assista
               </h2>
             </div>
-            <a href="#" class="btn btn-claro self-start md:self-auto">Inscreva-se no canal →</a>
+            <a data-link="youtube_url" hidden class="btn btn-claro self-start md:self-auto">Inscreva-se no canal →</a>
           </div>
 
           <div class="grid gap-8 lg:grid-cols-12">
@@ -373,7 +373,9 @@
               Últimas da escola
             </h2>
           </div>
-          <a href="#" class="link-grosso font-mono text-sm font-bold uppercase tracking-widest text-azul">Ver todas →</a>
+          <!-- Ainda nao existe pagina separada de noticias. Um link para "#"
+               devolveria o leitor ao topo, que e' pior que nao ter link.
+               Volta quando a pagina existir. -->
         </div>
 
         <div id="lista-noticias" class="grid gap-6 md:grid-cols-2 lg:grid-cols-3" aria-live="polite"></div>
@@ -395,7 +397,7 @@
                 mundo. Procure a coordenação ou fale com a equipe da rádio no intervalo.
               </p>
               <div class="mt-8 flex flex-wrap gap-4">
-                <a href="#" class="btn btn-claro">Falar com a equipe →</a>
+                <a data-link="email_contato" hidden class="btn btn-claro">Falar com a equipe →</a>
                 <a href="#programacao" class="btn border-bg bg-transparent text-white shadow-hard-bg">Ver a grade →</a>
               </div>
             </div>
@@ -473,9 +475,11 @@
               Redes
             </p>
             <ul class="mt-4 space-y-3 font-mono text-xs uppercase tracking-widest">
-              <li><a href="#" class="link-grosso">Instagram</a></li>
-              <li><a href="#" class="link-grosso">YouTube</a></li>
-              <li><a href="#" class="link-grosso">Spotify</a></li>
+              <!-- Preenchidos pela tabela `config`. Sem URL cadastrada, o item
+                   some — nunca vira um link que nao leva a lugar nenhum. -->
+              <li hidden><a data-link="instagram_url" class="link-grosso">Instagram</a></li>
+              <li hidden><a data-link="youtube_url" class="link-grosso">YouTube</a></li>
+              <li hidden><a data-link="spotify_url" class="link-grosso">Spotify</a></li>
             </ul>
           </div>
         </div>
