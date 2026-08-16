@@ -488,8 +488,12 @@
                  do aluno. Isto NAO e' seguranca — quem protege sao o login e o
                  RLS. Mantido legivel e alcancavel por teclado justamente porque
                  esconder de verdade so atrapalharia quem tem direito de entrar. -->
+            <!-- `/admin.html`, nao `/admin`: a URL limpa depende do
+                 `cleanUrls` da Vercel e quebra em qualquer outro servidor,
+                 inclusive no teste local. Com o .html funciona nos dois — na
+                 Vercel ela mesma redireciona para a versao limpa. -->
             <a
-              href="/admin"
+              href="/admin.html"
               rel="nofollow"
               class="border-3 border-bg/30 px-1.5 py-0.5 leading-none text-bg/70 transition-colors hover:border-amarelo hover:bg-amarelo hover:text-azul"
             >
