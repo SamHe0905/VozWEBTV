@@ -61,29 +61,31 @@ $funcao$;
 
 
 -- ═══ 3. Cadastre a equipe ══════════════════════════════════════════
--- TROQUE os e-mails abaixo pelos das contas criadas em Authentication.
--- Quem não estiver aqui consegue entrar no painel, mas não salva nada.
+-- Promove a editor TODA conta que já existe em Authentication → Users.
 --
--- Os e-mails ficam de fora deste arquivo de propósito: o repositório é
--- público, e endereço de e-mail em repositório público vira alvo de spam.
--- Preencha na hora de rodar, aqui no SQL Editor.
+-- Isso é seguro porque o cadastro público está desligado: só existe conta
+-- que alguém criou de propósito no painel do Supabase. E evita o erro mais
+-- provável aqui — digitar um e-mail diferente do cadastrado e descobrir
+-- depois, tentando salvar e levando "sem permissão".
+--
+-- Nenhum e-mail escrito no arquivo também é de propósito: o repositório é
+-- público, e endereço em repositório público vira alvo de spam.
 insert into public.editores (user_id, email, nome)
 select u.id, u.email, coalesce(u.raw_user_meta_data->>'name', '')
 from auth.users u
-where u.email in (
-  'TROQUE-PELO-SEU-EMAIL@exemplo.com'
-  -- , 'outra.pessoa@exemplo.com'
-)
 on conflict (user_id) do nothing;
 
--- Alternativa preguiçosa e segura: cadastra TODA conta que já existe.
--- Serve porque o cadastro público está fechado — só entra quem você criou.
--- Para usar, apague o insert acima e tire o comentário deste:
+-- Se um dia quiser dar acesso a só algumas contas, troque o insert acima
+-- por este e liste os e-mails:
 --
 -- insert into public.editores (user_id, email, nome)
 -- select u.id, u.email, coalesce(u.raw_user_meta_data->>'name', '')
 -- from auth.users u
+-- where u.email in ('fulano@exemplo.com', 'ciclana@exemplo.com')
 -- on conflict (user_id) do nothing;
+--
+-- Para TIRAR o acesso de alguém sem apagar a conta:
+--   delete from public.editores where email = 'fulano@exemplo.com';
 
 
 -- ═══ 4. Escrita passa a exigir estar na lista ══════════════════════
