@@ -9,3 +9,7 @@ Referencias/
 
 # Config local do preview (aponta para caminho temporario desta sessao)
 .claude/
+
+# Caminho do Google Sheets foi abandonado em favor do Supabase.
+# O gerador ainda emite este arquivo; ele nao faz mais parte do projeto.
+*.xlsx

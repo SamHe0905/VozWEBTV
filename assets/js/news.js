@@ -1,25 +1,12 @@
 /* ═══════════════════════════════════════════════════════════════════
    VOZ WEBTV — Noticias e equipe
-   Mesma mecanica da grade: mock agora, PapaParse na Fase 3.
+   Le tudo por `dados.js`, que decide sozinho entre Supabase e os dados
+   de demonstracao. Este arquivo so cuida de montar os cards.
    ═══════════════════════════════════════════════════════════════════ */
 
-import { MODO_DEMO, PLANILHAS } from './config.js';
-import { NOTICIAS, EQUIPE } from './mock.js';
+import { lerNoticias, lerEquipe, ehSim } from './dados.js';
 
-async function carregar(url, fallback) {
-  if (MODO_DEMO || !url) return fallback;
-  return new Promise((resolve) => {
-    window.Papa.parse(url, {
-      download: true,
-      header: true,
-      skipEmptyLines: true,
-      complete: (r) => resolve(r.data),
-      error: () => resolve(fallback),
-    });
-  });
-}
-
-const ativos = (linhas) => linhas.filter((l) => l && String(l.ativo).toUpperCase() === 'SIM');
+const ativos = (linhas) => linhas.filter((l) => l && ehSim(l.ativo));
 
 /** Iniciais do nome, para o avatar tipografico da equipe. */
 function iniciais(nome) {
@@ -74,7 +61,7 @@ export async function iniciarNoticias() {
     '<div class="skeleton h-80 md:col-span-2"></div>' +
     Array.from({ length: 2 }, () => '<div class="skeleton h-80"></div>').join('');
 
-  const lista = ativos(await carregar(PLANILHAS.noticias, NOTICIAS));
+  const lista = ativos(await lerNoticias());
   if (!lista.length) {
     alvo.innerHTML = `
       <div class="col-span-full border-6 border-azul bg-amarelo/40 p-10 text-center">
@@ -93,7 +80,7 @@ export async function iniciarEquipe() {
   const alvo = document.getElementById('lista-equipe');
   if (!alvo) return;
 
-  const lista = ativos(await carregar(PLANILHAS.equipe, EQUIPE)).slice(0, 4);
+  const lista = ativos(await lerEquipe()).slice(0, 4);
 
   alvo.innerHTML = lista
     .map(

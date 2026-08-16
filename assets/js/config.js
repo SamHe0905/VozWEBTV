@@ -22,14 +22,19 @@ export const AZURACAST = {
   pollMs: 15000,
 };
 
-/* ── Google Sheets (CMS) ───────────────────────────────────────────
-   Planilha > Arquivo > Compartilhar > Publicar na web > aba + CSV.
-   Formato: https://docs.google.com/spreadsheets/d/e/<TOKEN>/pub?gid=<GID>&single=true&output=csv */
-export const PLANILHAS = {
-  programacao: '',
-  noticias: '',
-  equipe: '',
-  config: '',
+/* ── Supabase (banco + painel admin) ───────────────────────────────
+   Supabase > Project Settings > API.
+
+   A chave `anonKey` E' PUBLICA por design — ela vai no codigo do cliente
+   de qualquer site Supabase. Quem protege os dados sao as policies de RLS
+   em `supabase/schema.sql`: com ela da' para LER, nunca para escrever.
+
+   NUNCA colocar aqui a chave `service_role`: ela ignora todo o RLS. */
+export const SUPABASE = {
+  /** Ex.: https://abcdefghijk.supabase.co */
+  url: '',
+  /** Chave "anon public" — a longa que comeca com "eyJ..." */
+  anonKey: '',
 };
 
 /* ── WebTV (YouTube) ───────────────────────────────────────────────

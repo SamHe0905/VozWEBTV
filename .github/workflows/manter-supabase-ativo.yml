@@ -1,0 +1,69 @@
+# ═══════════════════════════════════════════════════════════════════
+# VOZ WEBTV — Mantém o projeto Supabase acordado
+# ───────────────────────────────────────────────────────────────────
+# Rede de segurança do cron do Vercel (/api/keep-alive). Os dois fazem a
+# mesma coisa por caminhos independentes, porque cada um falha de um
+# jeito diferente:
+#
+#   • cron do Vercel  -> para se o deploy quebrar ou o projeto sair do ar
+#   • este workflow   -> o GitHub DESATIVA workflows agendados depois de
+#                        60 dias sem nenhum commit no repositório. Ele
+#                        avisa por e-mail e basta reativar com 1 clique.
+#
+# Recesso escolar longo é justamente quando os dois riscos aparecem
+# juntos — daí valer ter os dois.
+#
+# CONFIGURAÇÃO (uma vez):
+#   Settings → Secrets and variables → Actions → New repository secret
+#     SUPABASE_URL       = https://xxxxx.supabase.co
+#     SUPABASE_ANON_KEY  = eyJ...  (a chave anon public)
+# ═══════════════════════════════════════════════════════════════════
+
+name: Manter Supabase ativo
+
+on:
+  schedule:
+    # A cada 3 dias, 09:00 UTC (05:00 no MS). Margem folgada para os
+    # ~7 dias de inatividade que o Supabase tolera no plano free.
+    - cron: '0 9 */3 * *'
+  # Permite rodar na mão pelo botão "Run workflow".
+  workflow_dispatch:
+
+# Sem permissões de escrita: este job só faz uma requisição de leitura.
+permissions:
+  contents: read
+
+jobs:
+  ping:
+    name: Consultar o banco
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Consulta mínima no Supabase
+        env:
+          URL: ${{ secrets.SUPABASE_URL }}
+          CHAVE: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: |
+          set -euo pipefail
+
+          if [ -z "${URL:-}" ] || [ -z "${CHAVE:-}" ]; then
+            echo "::error::Faltam os secrets SUPABASE_URL e/ou SUPABASE_ANON_KEY."
+            echo "Configure em Settings → Secrets and variables → Actions."
+            exit 1
+          fi
+
+          # -s silencioso, -w imprime o status no fim, -o descarta o corpo.
+          status=$(curl -s -o /dev/null -w '%{http_code}' \
+            -H "apikey: ${CHAVE}" \
+            -H "Authorization: Bearer ${CHAVE}" \
+            "${URL}/rest/v1/config?select=chave&limit=1")
+
+          echo "Supabase respondeu HTTP ${status}"
+
+          if [ "${status}" != "200" ]; then
+            echo "::error::Esperava 200 e veio ${status}. Projeto pausado, chave trocada ou tabela 'config' ausente?"
+            exit 1
+          fi
+
+          echo "::notice::Banco acordado. Contador de inatividade zerado."

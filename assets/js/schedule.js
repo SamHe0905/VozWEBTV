@@ -1,13 +1,13 @@
 /* ═══════════════════════════════════════════════════════════════════
    VOZ WEBTV — Grade de programacao
    ───────────────────────────────────────────────────────────────────
-   Em MODO_DEMO le de mock.js. Na Fase 3, `carregarProgramacao()` passa
-   a buscar o CSV publicado e roda o PapaParse — o resto do arquivo
-   (normalizacao, "no ar agora", render) continua igual.
+   Le a grade por `dados.js`, que decide sozinho entre o Supabase e os
+   dados de demonstracao. Este arquivo cuida so da logica de horario
+   (o que esta no ar, o que vem depois, se as 24h fecham) e do render.
    ═══════════════════════════════════════════════════════════════════ */
 
-import { MODO_DEMO, PLANILHAS, SITE } from './config.js';
-import { PROGRAMACAO } from './mock.js';
+import { SITE } from './config.js';
+import { lerProgramacao, ehSim } from './dados.js';
 
 const DIAS = ['DOMINGO', 'SEGUNDA', 'TERÇA', 'QUARTA', 'QUINTA', 'SEXTA', 'SÁBADO'];
 const DIAS_CURTOS = ['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB'];
@@ -222,25 +222,10 @@ export function proximoPrograma() {
 
 /* ── Carregamento ──────────────────────────────────────────────── */
 
-async function carregarProgramacao() {
-  if (MODO_DEMO || !PLANILHAS.programacao) return PROGRAMACAO;
-
-  // Fase 3: PapaParse sobre o CSV publicado.
-  return new Promise((resolve) => {
-    window.Papa.parse(PLANILHAS.programacao, {
-      download: true,
-      header: true,
-      skipEmptyLines: true,
-      complete: (r) => resolve(r.data),
-      error: () => resolve(PROGRAMACAO), // fallback: nunca deixa a secao vazia
-    });
-  });
-}
-
 /** Descarta linhas inativas/incompletas e ordena por horario. */
 function normalizar(linhas) {
   return linhas
-    .filter((l) => l && String(l.ativo).toUpperCase() === 'SIM' && l.programa && l.hora_inicio)
+    .filter((l) => l && ehSim(l.ativo) && l.programa && l.hora_inicio)
     .map((l) => ({
       ...l,
       dia: String(l.dia).toUpperCase().trim(),
@@ -404,7 +389,7 @@ export async function iniciarGrade() {
     alvo.innerHTML = Array.from({ length: 4 }, () => '<div class="skeleton h-64"></div>').join('');
   }
 
-  itens = normalizar(await carregarProgramacao());
+  itens = normalizar(await lerProgramacao());
   validarGrade();
   diaSelecionado = agoraNoMS().dia;
 

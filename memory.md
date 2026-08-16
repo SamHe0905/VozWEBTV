@@ -103,6 +103,10 @@ Radio/
 | 11 | Nenhum dado pessoal de aluno na planilha | A planilha publicada é pública |
 | 12 | Player **nunca** dá autoplay | Bloqueado pelos navegadores e hostil ao usuário |
 | 13 | Fuso fixado em `America/Campo_Grande` | O "no ar agora" não pode depender do relógio do visitante |
+| 18 | **CMS é Supabase, não Google Sheets** (decidido 15/08) | Decisão do usuário, com as ressalvas na mesa |
+| 19 | Site público fala com Supabase por `fetch` puro, **sem `supabase-js`** | A lib custa ~40 KB para fazer um GET; o painel admin usa, o site não |
+| 20 | Dois keep-alive independentes (Vercel cron + GitHub Action) | Free tier pausa em ~7 dias; recesso escolar é justo quando ambos os riscos aparecem |
+| 21 | `dados.js` é o único arquivo que sabe de onde vêm os dados | Trocar de fonte de novo mexe em um arquivo só |
 | 14 | Coluna **`tipo`** (`AO VIVO`/`AUTOMATICO`) é a fonte da verdade | Deduzir pelo `apresentador` quebra se alguém digitar diferente |
 | 15 | Em sobreposição de horários, vence quem **começou por último** | Evita que um bloco longo engula um programa curto cadastrado dentro dele |
 | 16 | Blocos podem cruzar a meia-noite; cadastrar no dia em que **começam** | Grade 24h torna isso rotina, não exceção |
