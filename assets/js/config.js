@@ -47,7 +47,14 @@ export const SITE = {
   /** "Voz WebTV": o TV vem de Teotonio Vilela, nao de televisao. */
   nome: 'Voz WebTV',
   escola: 'Escola Estadual Teotônio Vilela',
-  cidade: 'Mato Grosso do Sul',
+  endereco: {
+    rua: 'Av. Souza Lima, 506',
+    bairro: 'Núcleo Habitacional Universitário',
+    cidade: 'Campo Grande',
+    uf: 'MS',
+    cep: '79071-340',
+  },
+  cidade: 'Campo Grande — MS',
   email: 'contato@vozwebtv.com.br',
   instagram: '#',
   youtube: '#',
