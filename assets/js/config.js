@@ -44,9 +44,10 @@ export const WEBTV = {
 
 /* ── Identidade e contato ──────────────────────────────────────────*/
 export const SITE = {
+  /** "Voz WebTV": o TV vem de Teotonio Vilela, nao de televisao. */
   nome: 'Voz WebTV',
-  escola: 'Escola Estadual — SED MS',
-  cidade: 'Campo Grande — MS',
+  escola: 'Escola Estadual Teotônio Vilela',
+  cidade: 'Mato Grosso do Sul',
   email: 'contato@vozwebtv.com.br',
   instagram: '#',
   youtube: '#',

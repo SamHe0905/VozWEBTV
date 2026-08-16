@@ -1,13 +1,45 @@
-# Como configurar a planilha da programação
+﻿# Como configurar a planilha da programação
 
 > Guia prático para colocar a grade da Voz WebTV no Google Sheets e ligar ao site.
-> Arquivo pronto para importar: **`planilha-voz-webtv.xlsx`** (na raiz do projeto).
+> Arquivo semente para importar: **`planilha-MODELO-inicial.xlsx`** (raiz do projeto).
+
+---
+
+## ⚠️ Onde fica o arquivo que se edita no dia a dia
+
+**No Google Drive da escola — não neste repositório.**
+
+O `planilha-MODELO-inicial.xlsx` é uma **semente**, usada uma única vez para criar a
+planilha no Drive. Depois do upload, ele vira apenas um registro histórico:
+
+```
+planilha-MODELO-inicial.xlsx  (repositório)  →  usado 1 vez, no Passo 1
+                                                  ↓
+        Planilha no Google Drive  ←── É AQUI que professores e alunos editam,
+                                       todos os dias, para sempre
+                                                  ↓
+                             site lê os CSVs publicados
+```
+
+**Editar o `.xlsx` do repositório depois do Passo 1 não muda nada no site.**
+Ele não fica em sincronia com o Drive. Se precisar recriar a planilha do zero
+algum dia, use-o de novo — fora isso, esqueça que ele existe.
+
+### Resumo de onde mexer em quê
+
+| O que mudar | Onde | Quem faz |
+|---|---|---|
+| Programação, notícias, equipe, letreiro | Planilha no **Google Drive** | Professores e alunos |
+| URLs das planilhas, do stream, do YouTube | `assets/js/config.js` | Quem cuida do site |
+| Layout, cores, textos fixos da página | `index.html`, `tailwind.config.js` | Quem cuida do site |
+
+Só a primeira linha é rotina. As outras duas são raras, e exigem `git push`.
 
 ---
 
 ## O que já está pronto
 
-O arquivo `planilha-voz-webtv.xlsx` tem **5 abas**, já preenchidas com a grade 24h completa:
+O arquivo `planilha-MODELO-inicial.xlsx` tem **5 abas**, já preenchidas com a grade 24h completa:
 
 | Aba | Conteúdo | Linhas |
 |---|---|---|
@@ -25,7 +57,7 @@ entre blocos com locutor e blocos de música automática.
 ## Passo 1 — Subir a planilha para o Google Sheets
 
 1. Acesse [drive.google.com](https://drive.google.com).
-2. **Novo → Upload de arquivo** → selecione `planilha-voz-webtv.xlsx`.
+2. **Novo → Upload de arquivo** → selecione `planilha-MODELO-inicial.xlsx`.
 3. Clique com o botão direito no arquivo → **Abrir com → Planilhas Google**.
 4. Em **Arquivo → Salvar como Planilhas Google** (isso converte de `.xlsx` para o
    formato nativo, necessário para o passo seguinte).
@@ -156,8 +188,8 @@ Duas coisas a resolver antes de a rádio ir ao ar publicamente:
 
 1. **Direitos autorais.** Transmitir música em uma web rádio pública no Brasil
    envolve o ECAD, mesmo sem fins lucrativos. Vale confirmar com a SED como outras
-   rádios escolares da rede tratam isso — pode existir um enquadramento
-   institucional que já cubra a escola.
+   rádios escolares tratam isso — pode existir um enquadramento institucional
+   da rede estadual que já cubra a Teotônio Vilela.
 2. **Termos do YouTube.** Extrair áudio contraria os termos de uso da plataforma.
    Alternativas que evitam o problema: acervos de música livre
    (Jamendo, Free Music Archive, YouTube Audio Library com licença de uso),

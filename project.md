@@ -1,4 +1,4 @@
-# Voz WebTV — Arquitetura e Escopo
+﻿# Voz WebTV — Arquitetura e Escopo
 
 > Documento mestre de arquitetura. Última atualização: 15/08/2026.
 > Documentos irmãos: [`visual.md`](visual.md) (design system) e [`memory.md`](memory.md) (estado atual e próximos passos).
@@ -7,7 +7,7 @@
 
 ## 1. Escopo
 
-**Voz WebTV** é o site institucional da web rádio / web TV escolar. É a vitrine pública da rádio: onde o ouvinte escuta a transmissão ao vivo, assiste às transmissões de vídeo, descobre a grade de programação e lê as notícias da escola.
+**Voz WebTV** é o site da web rádio da **Escola Estadual Teotônio Vilela**, em Mato Grosso do Sul. O `TV` do nome vem das iniciais da escola, não de "televisão". É a vitrine pública da rádio: onde o ouvinte escuta a transmissão ao vivo, assiste às transmissões de vídeo, descobre a grade de programação e lê as notícias da escola.
 
 ### O que o site É
 - Um **site estático** (sem servidor, sem banco de dados, sem backend).
@@ -25,7 +25,7 @@
 ### Público-alvo
 1. **Alunos** — consumo majoritariamente mobile, conexões instáveis. Mobile-first é obrigatório.
 2. **Professores e equipe pedagógica** — desktop, consulta da grade e das notícias.
-3. **Comunidade escolar (famílias) e SED MS** — vitrine institucional do projeto.
+3. **Comunidade escolar (famílias) e direção da escola** — vitrine institucional do projeto.
 
 ---
 

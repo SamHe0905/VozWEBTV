@@ -3,7 +3,7 @@
    ───────────────────────────────────────────────────────────────────
    GERADO AUTOMATICAMENTE. Os objetos usam EXATAMENTE os mesmos nomes de
    campo das colunas da planilha do Google (ver project.md secao 5) e o
-   mesmo conteudo de `planilha-voz-webtv.xlsx`. Quando a integracao com o
+   mesmo conteudo de `planilha-MODELO-inicial.xlsx`. Quando a integracao com o
    PapaParse entrar, o formato de saida sera identico e nenhum codigo de
    renderizacao precisara mudar.
 
@@ -101,7 +101,7 @@ export const PROGRAMACAO = [
 export const NOTICIAS = [
   { data: "12/08/2026", titulo: "Voz WebTV passa a transmitir 24 horas por dia", resumo: "A rádio agora fica no ar sem interrupção: programas ao vivo durante o período letivo e seleção musical automática na madrugada e nos intervalos.", imagem: "", link: "#", destaque: "SIM", categoria: "DESTAQUE", ativo: "SIM" },
   { data: "08/08/2026", titulo: "Inscrições abertas para a oficina de locução", resumo: "Vinte vagas para alunos do 8º ano ao 3º ano. As aulas acontecem às quartas, no contraturno.", imagem: "", link: "#", destaque: "NAO", categoria: "OFICINA", ativo: "SIM" },
-  { data: "05/08/2026", titulo: "Estúdio ganha nova mesa de som", resumo: "O equipamento foi conquistado com o projeto aprovado junto à SED MS e já está em operação.", imagem: "", link: "#", destaque: "NAO", categoria: "ESTRUTURA", ativo: "SIM" },
+  { data: "05/08/2026", titulo: "Estúdio ganha nova mesa de som", resumo: "O equipamento foi conquistado com o projeto aprovado pela direção e já está em operação.", imagem: "", link: "#", destaque: "NAO", categoria: "ESTRUTURA", ativo: "SIM" },
   { data: "01/08/2026", titulo: "Podcast da escola chega ao 10º episódio", resumo: "A série produzida pelo 2º ano já soma mais de mil reproduções nas plataformas.", imagem: "", link: "#", destaque: "NAO", categoria: "PODCAST", ativo: "SIM" },
   { data: "28/07/2026", titulo: "Cobertura completa dos Jogos Escolares", resumo: "A equipe de esportes transmitiu as finais direto da quadra, com narração ao vivo.", imagem: "", link: "#", destaque: "NAO", categoria: "ESPORTE", ativo: "SIM" },
 ];
@@ -115,7 +115,7 @@ export const EQUIPE = [
 
 export const CONFIG_SITE = {
   marquee_texto: "NO AR 24 HORAS • A RÁDIO FEITA POR ALUNOS • VOZ WEBTV • SINTONIZE AGORA • NOTÍCIA, MÚSICA E CULTURA",
-  marquee_rodape: "VOZ WEBTV • SED MATO GROSSO DO SUL • EDUCAÇÃO QUE SE ESCUTA • PARTICIPE VOCÊ TAMBÉM",
+  marquee_rodape: "VOZ WEBTV • ESCOLA ESTADUAL TEOTÔNIO VILELA • EDUCAÇÃO QUE SE ESCUTA • PARTICIPE VOCÊ TAMBÉM",
   aviso_topo: "No ar 24 horas por dia, todos os dias",
 };
 

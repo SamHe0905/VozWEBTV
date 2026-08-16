@@ -67,7 +67,17 @@ Radio/
 
 ## Contexto do projeto
 
-- **Produto:** site da web rádio / web TV escolar **Voz WebTV**.
+> ### ⚠️ O nome
+> **Voz WebTV** — o **TV** vem de **Teotônio Vilela**, das iniciais da escola.
+> **Não** significa "televisão". A rádio é da **Escola Estadual Teotônio Vilela**
+> (Mato Grosso do Sul), de uma escola só — não é um projeto da rede estadual.
+> A seção de vídeo do site chama-se **"Assista"**, justamente para não reforçar
+> a leitura errada do nome.
+>
+> A paleta continua sendo a institucional da SED MS porque a Teotônio Vilela é
+> escola estadual — mas o site se apresenta como a rádio **da escola**, não da rede.
+
+- **Produto:** site da web rádio **Voz WebTV**, da Escola Estadual Teotônio Vilela.
 - **Natureza:** site estático, alta performance, hospedagem gratuita no Vercel.
 - **Stack:** HTML · Tailwind CSS · JavaScript puro · Google Sheets + PapaParse como CMS · AzuraCast (áudio) · YouTube (vídeo).
 - **Estética:** Web Brutalista / Editorial (Zine), inspirada na estrutura do site RTRFM (arquivo em `Referencias/`), com as cores originais **descartadas** e substituídas pela paleta institucional da **SED MS**.
