@@ -12,8 +12,8 @@
    sessao, renovacao de token e escrita.
    ═══════════════════════════════════════════════════════════════════ */
 
-import { MODO_DEMO, SUPABASE, CACHE_TTL_MS } from './config.js?v=202608160207';
-import { PROGRAMACAO, NOTICIAS, EQUIPE, CONFIG_SITE } from './mock.js?v=202608160207';
+import { MODO_DEMO, SUPABASE, CACHE_TTL_MS } from './config.js?v=202608160211';
+import { PROGRAMACAO, NOTICIAS, EQUIPE, CONFIG_SITE } from './mock.js?v=202608160211';
 
 /** O site esta ligado a um banco de verdade? */
 export const temBanco = () => !MODO_DEMO && Boolean(SUPABASE.url && SUPABASE.anonKey);
@@ -43,13 +43,19 @@ function hhmm(valor) {
   return /^\d{2}:\d{2}/.test(s) ? s.slice(0, 5) : s;
 }
 
-/* ── Cache de sessao ───────────────────────────────────────────────
-   Evita bater no banco a cada navegacao interna. Curto de proposito:
-   quem edita no painel quer ver a mudanca no ar rapido. */
+/* ── Cache ─────────────────────────────────────────────────────────
+   Evita bater no banco a cada navegacao interna.
+
+   Fica em `localStorage`, nao em `sessionStorage`, porque sessionStorage
+   e' POR ABA: o painel limpava o cache na aba dele e a aba do site
+   continuava com a copia velha. Quem editava via a mudanca no painel e
+   nao via no site, sem entender por que.
+
+   A tabela `config` nunca e' guardada — ver `lerConfig()`. */
 
 function doCache(chave) {
   try {
-    const bruto = sessionStorage.getItem(`voz:${chave}`);
+    const bruto = localStorage.getItem(`voz:${chave}`);
     if (!bruto) return null;
     const { em, dados } = JSON.parse(bruto);
     return Date.now() - em < CACHE_TTL_MS ? dados : null;
@@ -60,19 +66,21 @@ function doCache(chave) {
 
 function paraCache(chave, dados) {
   try {
-    sessionStorage.setItem(`voz:${chave}`, JSON.stringify({ em: Date.now(), dados }));
+    localStorage.setItem(`voz:${chave}`, JSON.stringify({ em: Date.now(), dados }));
   } catch {
-    // sessionStorage cheio ou bloqueado: seguir sem cache e' aceitavel.
+    // Armazenamento cheio ou bloqueado: seguir sem cache e' aceitavel.
   }
 }
 
 /* ── Leitura ───────────────────────────────────────────────────────*/
 
-async function buscar(tabela, query, reserva) {
+async function buscar(tabela, query, reserva, { semCache = false } = {}) {
   if (!temBanco()) return reserva;
 
-  const emCache = doCache(tabela);
-  if (emCache) return emCache;
+  if (!semCache) {
+    const emCache = doCache(tabela);
+    if (emCache) return emCache;
+  }
 
   try {
     const r = await fetch(`${SUPABASE.url}/rest/v1/${tabela}?${query}`, {
@@ -89,7 +97,7 @@ async function buscar(tabela, query, reserva) {
       console.warn(`[Voz WebTV] "${tabela}" veio vazia do banco; usando os dados locais.`);
       return reserva;
     }
-    paraCache(tabela, dados);
+    if (!semCache) paraCache(tabela, dados);
     return dados;
   } catch (erro) {
     // O site nunca fica em branco por causa do banco.
@@ -127,20 +135,32 @@ export async function lerEquipe() {
   return linhas.map((l) => ({ ...l, ativo: ehSim(l.ativo) ? 'SIM' : 'NAO' }));
 }
 
-/** A aba `config` e' chave/valor; aqui vira um objeto simples. */
+/**
+ * A tabela `config` e' chave/valor; aqui vira um objeto simples.
+ *
+ * NUNCA e' guardada em cache. Ela decide QUAIS SECOES existem na pagina,
+ * entao uma copia velha faz a secao desligada continuar aparecendo — e a
+ * pessoa que desligou fica sem entender o que aconteceu. Sao 13 linhas
+ * minusculas; buscar sempre custa quase nada e nunca mente.
+ */
 export async function lerConfig() {
   if (!temBanco()) return CONFIG_SITE;
-  const linhas = await buscar('config', 'select=chave,valor', null);
+  const linhas = await buscar('config', 'select=chave,valor', null, { semCache: true });
   if (!linhas) return CONFIG_SITE;
   const obj = Object.fromEntries(linhas.map((l) => [l.chave, l.valor]));
   // Uma chave apagada no banco nao pode apagar o letreiro do site.
   return { ...CONFIG_SITE, ...obj };
 }
 
-/** Usado pelo painel admin depois de salvar, para o site refletir na hora. */
+/**
+ * Usado pelo painel depois de salvar. Como o cache vive em `localStorage`,
+ * limpar aqui vale para TODAS as abas — inclusive a do site aberta ao lado.
+ */
 export function limparCache() {
   for (const t of ['programacao', 'noticias', 'equipe', 'config']) {
     try {
+      localStorage.removeItem(`voz:${t}`);
+      // Restos da versao anterior, que guardava por aba.
       sessionStorage.removeItem(`voz:${t}`);
     } catch {
       /* ignorado */

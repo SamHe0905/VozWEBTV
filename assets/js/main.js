@@ -5,11 +5,11 @@
    AzuraCast nao esta disponivel.
    ═══════════════════════════════════════════════════════════════════ */
 
-import { lerConfig } from './dados.js?v=202608160207';
-import { iniciarGrade } from './schedule.js?v=202608160207';
-import { iniciarPlayer } from './player.js?v=202608160207';
-import { iniciarNoticias, iniciarEquipe } from './news.js?v=202608160207';
-import { iniciarWebTV } from './webtv.js?v=202608160207';
+import { lerConfig } from './dados.js?v=202608160211';
+import { iniciarGrade } from './schedule.js?v=202608160211';
+import { iniciarPlayer } from './player.js?v=202608160211';
+import { iniciarNoticias, iniciarEquipe } from './news.js?v=202608160211';
+import { iniciarWebTV } from './webtv.js?v=202608160211';
 
 /* ── Marquee ───────────────────────────────────────────────────── */
 
