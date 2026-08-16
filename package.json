@@ -5,7 +5,7 @@
   "description": "Site da web radio escolar Voz WebTV",
   "scripts": {
     "dev": "tailwindcss -i ./src/input.css -o ./assets/css/styles.css --watch",
-    "build": "tailwindcss -i ./src/input.css -o ./assets/css/styles.css --minify"
+    "build": "tailwindcss -i ./src/input.css -o ./assets/css/styles.css --minify && node scripts/versionar.mjs"
   },
   "devDependencies": {
     "tailwindcss": "^3.4.17"

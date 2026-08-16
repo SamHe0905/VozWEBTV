@@ -4,7 +4,7 @@
    de demonstracao. Este arquivo so cuida de montar os cards.
    ═══════════════════════════════════════════════════════════════════ */
 
-import { lerNoticias, lerEquipe, ehSim } from './dados.js';
+import { lerNoticias, lerEquipe, ehSim } from './dados.js?v=202608160207';
 
 const ativos = (linhas) => linhas.filter((l) => l && ehSim(l.ativo));
 

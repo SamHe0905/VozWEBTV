@@ -12,8 +12,8 @@
    sessao, renovacao de token e escrita.
    ═══════════════════════════════════════════════════════════════════ */
 
-import { MODO_DEMO, SUPABASE, CACHE_TTL_MS } from './config.js';
-import { PROGRAMACAO, NOTICIAS, EQUIPE, CONFIG_SITE } from './mock.js';
+import { MODO_DEMO, SUPABASE, CACHE_TTL_MS } from './config.js?v=202608160207';
+import { PROGRAMACAO, NOTICIAS, EQUIPE, CONFIG_SITE } from './mock.js?v=202608160207';
 
 /** O site esta ligado a um banco de verdade? */
 export const temBanco = () => !MODO_DEMO && Boolean(SUPABASE.url && SUPABASE.anonKey);

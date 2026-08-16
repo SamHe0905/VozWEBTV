@@ -6,8 +6,8 @@
    (o que esta no ar, o que vem depois, se as 24h fecham) e do render.
    ═══════════════════════════════════════════════════════════════════ */
 
-import { SITE } from './config.js';
-import { lerProgramacao, ehSim } from './dados.js';
+import { SITE } from './config.js?v=202608160207';
+import { lerProgramacao, ehSim } from './dados.js?v=202608160207';
 
 const DIAS = ['DOMINGO', 'SEGUNDA', 'TERÇA', 'QUARTA', 'QUINTA', 'SEXTA', 'SÁBADO'];
 const DIAS_CURTOS = ['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB'];
