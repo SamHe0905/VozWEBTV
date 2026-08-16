@@ -7,8 +7,31 @@
 
 ## Estado atual
 
-**📍 Fase 2 — `index.html` com o design system aplicado + grade 24h.**
-Data: 15/08/2026 · Status: **concluída e pronta para deploy**.
+**📍 Fase 3 — Supabase no ar, painel construído, deploy pendente.**
+Data: 15/08/2026.
+
+### Infraestrutura (verificada de fora, não presumida)
+
+| Item | Estado |
+|---|---|
+| Projeto Supabase | `bkmjzyrkxhfahoxcjiby` · região São Paulo |
+| Tabelas | ✅ 70 blocos · 5 notícias · 4 equipe · 7 config |
+| Cobertura 24h no banco | ✅ 1440 min nos 7 dias |
+| RLS — escrita anônima | ✅ bloqueada (POST real → 401) |
+| Cadastro público | ✅ fechado (`disable_signup: true`) |
+| Reforço `editores` + `eh_editor()` | ✅ aplicado · `samheimbach@gmail.com` na lista |
+| Repositório | ✅ github.com/SamHe0905/VozWEBTV (público) |
+| Keep-alive GitHub Action | ✅ **testado, HTTP 200 em 4s** |
+| Keep-alive Vercel cron | ⬜ depende do deploy |
+| Deploy Vercel | ⬜ falhou por `outputDirectory`, já corrigido no repo |
+| **Login no painel** | ⬜ **bloqueado: `Enable Email provider` desligado** |
+| Stream AzuraCast | ⬜ URL não existe ainda |
+
+### O gargalo
+`external.email = false` no Supabase. Alguém desligou o **provedor de e-mail**
+inteiro achando que estava fechando só o cadastro — são dois botões diferentes
+na mesma tela. Enquanto estiver assim, ninguém entra no painel, e login e
+gravação seguem sem teste de ponta a ponta.
 
 ### Como a rádio opera (decisão do dia 15/08)
 A rádio fica **no ar 24h**, mas **não tem locutor 24h**. A trilha é música
