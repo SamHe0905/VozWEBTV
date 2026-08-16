@@ -82,6 +82,18 @@ function traduzirErro(msg, status) {
   const m = String(msg).toLowerCase();
   if (m.includes('invalid login credentials')) return 'E-mail ou senha incorretos.';
   if (m.includes('email not confirmed')) return 'Este e-mail ainda não foi confirmado.';
+  // Acontece quando desligam o provedor de e-mail inteiro achando que
+  // estao so fechando o cadastro. Sao dois botoes diferentes na mesma tela.
+  if (m.includes('email logins are disabled') || m.includes('email provider')) {
+    return (
+      'O login por e-mail está desligado no Supabase. ' +
+      'Em Authentication → Sign In / Providers → Email, ligue "Enable Email provider" ' +
+      'e mantenha "Allow new users to sign up" desligado.'
+    );
+  }
+  if (m.includes('signups not allowed') || m.includes('signup is disabled')) {
+    return 'O cadastro está fechado, como deve ser. Peça uma conta a quem cuida da rádio.';
+  }
   if (m.includes('invalid refresh token') || m.includes('refresh_token_not_found')) {
     return 'Sua sessão expirou. Entre de novo.';
   }

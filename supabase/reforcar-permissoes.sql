@@ -63,14 +63,27 @@ $funcao$;
 -- ═══ 3. Cadastre a equipe ══════════════════════════════════════════
 -- TROQUE os e-mails abaixo pelos das contas criadas em Authentication.
 -- Quem não estiver aqui consegue entrar no painel, mas não salva nada.
+--
+-- Os e-mails ficam de fora deste arquivo de propósito: o repositório é
+-- público, e endereço de e-mail em repositório público vira alvo de spam.
+-- Preencha na hora de rodar, aqui no SQL Editor.
 insert into public.editores (user_id, email, nome)
 select u.id, u.email, coalesce(u.raw_user_meta_data->>'name', '')
 from auth.users u
 where u.email in (
-  'samheimbach@gmail.com'
-  -- , 'outra.pessoa@escola.ms.gov.br'
+  'TROQUE-PELO-SEU-EMAIL@exemplo.com'
+  -- , 'outra.pessoa@exemplo.com'
 )
 on conflict (user_id) do nothing;
+
+-- Alternativa preguiçosa e segura: cadastra TODA conta que já existe.
+-- Serve porque o cadastro público está fechado — só entra quem você criou.
+-- Para usar, apague o insert acima e tire o comentário deste:
+--
+-- insert into public.editores (user_id, email, nome)
+-- select u.id, u.email, coalesce(u.raw_user_meta_data->>'name', '')
+-- from auth.users u
+-- on conflict (user_id) do nothing;
 
 
 -- ═══ 4. Escrita passa a exigir estar na lista ══════════════════════
