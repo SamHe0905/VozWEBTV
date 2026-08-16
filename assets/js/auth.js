@@ -15,7 +15,7 @@
    este modulo renova sozinho antes disso.
    ═══════════════════════════════════════════════════════════════════ */
 
-import { SUPABASE } from './config.js?v=202608160215';
+import { SUPABASE } from './config.js?v=202608160218';
 
 const CHAVE_SESSAO = 'voz:sessao';
 /** Renova com esta antecedencia, para nao esbarrar no vencimento. */

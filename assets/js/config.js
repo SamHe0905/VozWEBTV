@@ -18,8 +18,8 @@
 export const MODO_DEMO = false;
 
 /* ── AzuraCast (audio ao vivo) ─────────────────────────────────────
-   Preencher quando a instancia estiver no ar. Ver memory.md > Pendencias. */
-export const AZURACAST = {
+   Preencher quando a instancia da escola estiver no ar. */
+const AZURACAST_REAL = {
   /** URL do stream. Ex.: https://radio.exemplo.br/listen/voz_webtv/radio.mp3 */
   streamUrl: '',
   /** API publica de "tocando agora". Ex.: https://radio.exemplo.br/api/nowplaying/voz_webtv */
@@ -27,6 +27,42 @@ export const AZURACAST = {
   /** Intervalo de atualizacao do "tocando agora", em ms. */
   pollMs: 15000,
 };
+
+/* ── Streams de teste ──────────────────────────────────────────────
+   Acionados por `?stream=demo` na URL. Servem para experimentar o
+   player antes de a radio da escola existir — inclusive no celular,
+   pelo site publicado.
+
+   Fica FORA da configuracao normal de proposito: deixar o stream de
+   outra emissora fixo no site seria retransmitir a radio dela sob o
+   nome da escola. Assim, so ouve quem digita o parametro.
+
+   A lista e' FECHADA: `?stream=` so aceita as chaves abaixo, nunca uma
+   URL qualquer. Se aceitasse, um link montado por terceiros faria o
+   site da escola tocar qualquer coisa. */
+const STREAMS_DE_TESTE = {
+  // Instancia publica de demonstracao do proprio AzuraCast.
+  demo: {
+    streamUrl: 'https://demo.azuracast.com/listen/azuratest_radio/radio.mp3',
+    nowPlaying: 'https://demo.azuracast.com/api/nowplaying/azuratest_radio',
+  },
+};
+
+/** Qual teste esta ativo agora, ou `null`. */
+export function testeAtivo() {
+  try {
+    const escolha = new URLSearchParams(window.location.search).get('stream');
+    return escolha && STREAMS_DE_TESTE[escolha] ? escolha : null;
+  } catch {
+    return null;
+  }
+}
+
+const emTeste = testeAtivo();
+
+export const AZURACAST = emTeste
+  ? { ...AZURACAST_REAL, ...STREAMS_DE_TESTE[emTeste] }
+  : AZURACAST_REAL;
 
 /* ── Supabase (banco + painel admin) ───────────────────────────────
    Supabase > Project Settings > API.

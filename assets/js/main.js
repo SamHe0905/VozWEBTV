@@ -5,11 +5,12 @@
    AzuraCast nao esta disponivel.
    ═══════════════════════════════════════════════════════════════════ */
 
-import { lerConfig } from './dados.js?v=202608160215';
-import { iniciarGrade } from './schedule.js?v=202608160215';
-import { iniciarPlayer } from './player.js?v=202608160215';
-import { iniciarNoticias, iniciarEquipe } from './news.js?v=202608160215';
-import { iniciarWebTV } from './webtv.js?v=202608160215';
+import { testeAtivo } from './config.js?v=202608160218';
+import { lerConfig } from './dados.js?v=202608160218';
+import { iniciarGrade } from './schedule.js?v=202608160218';
+import { iniciarPlayer } from './player.js?v=202608160218';
+import { iniciarNoticias, iniciarEquipe } from './news.js?v=202608160218';
+import { iniciarWebTV } from './webtv.js?v=202608160218';
 
 /* ── Marquee ───────────────────────────────────────────────────── */
 
@@ -134,7 +135,27 @@ function aplicarLinks(cfg) {
   });
 }
 
+/**
+ * Faixa de aviso quando o site esta tocando um stream de teste.
+ * Sem isto, alguem podia abrir o link com `?stream=demo`, ouvir outra
+ * emissora e achar que era a radio da escola.
+ */
+function avisarModoTeste() {
+  const teste = testeAtivo();
+  if (!teste) return;
+
+  const faixa = document.createElement('div');
+  faixa.className =
+    'sticky top-0 z-[60] border-b-6 border-azul bg-amarelo px-4 py-2 text-center ' +
+    'font-mono text-[11px] font-bold uppercase tracking-widest text-azul md:text-xs';
+  faixa.innerHTML =
+    'Modo de teste — o áudio é de uma rádio de demonstração, não da escola. ' +
+    '<a href="./" class="underline decoration-3 underline-offset-2">Sair do teste</a>';
+  document.body.prepend(faixa);
+}
+
 async function iniciar() {
+  avisarModoTeste();
   iniciarMenu();
 
   // A tabela `config` guarda o que a equipe edita sem mexer em codigo:
