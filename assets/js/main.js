@@ -71,6 +71,33 @@ function aplicarAvisoTopo(texto) {
   if (alvo && texto) alvo.textContent = texto;
 }
 
+/**
+ * Secoes que a equipe pode ligar e desligar pela tabela `config`.
+ * Chave ausente = secao ligada, para nao apagar nada de bancos antigos.
+ */
+const SECOES = [
+  { chave: 'secao_programacao', id: 'programacao' },
+  { chave: 'secao_webtv', id: 'webtv' },
+  { chave: 'secao_noticias', id: 'noticias' },
+  { chave: 'secao_participe', id: 'participe' },
+];
+
+/**
+ * Remove do site as secoes desligadas — E TAMBEM os links que apontam
+ * para elas. Esconder so' a secao deixaria o item do menu levando a
+ * lugar nenhum, que e' o mesmo defeito de um href="#".
+ */
+export function aplicarSecoes(cfg) {
+  for (const s of SECOES) {
+    const valor = cfg[s.chave];
+    if (valor === undefined) continue; // chave nao cadastrada: mantem ligada
+    if (String(valor).trim().toUpperCase() !== 'NAO') continue;
+
+    document.getElementById(s.id)?.remove();
+    document.querySelectorAll(`a[href="#${s.id}"]`).forEach((a) => (a.closest('li') || a).remove());
+  }
+}
+
 /** Vazio, "#" ou "-" sao placeholders: nao servem como destino. */
 const temDestino = (v) => {
   const s = String(v || '').trim();
@@ -117,6 +144,8 @@ async function iniciar() {
   montarMarquee('marquee-topo', cfg.marquee_texto, 'text-verde');
   montarMarquee('marquee-rodape', cfg.marquee_rodape, 'text-amarelo');
   aplicarAvisoTopo(cfg.aviso_topo);
+  // Antes dos links: nao adianta preencher o que vai ser removido.
+  aplicarSecoes(cfg);
   aplicarLinks(cfg);
   iniciarWebTV(cfg);
 

@@ -263,7 +263,11 @@ values
   ('instagram_url', '', 'Link do Instagram da rádio. Deixe vazio para o item sumir do rodapé'),
   ('youtube_url', '', 'Link do canal no YouTube. Deixe vazio para o item sumir'),
   ('spotify_url', '', 'Link no Spotify. Deixe vazio para o item sumir'),
-  ('email_contato', 'contato@vozwebtv.com.br', 'E-mail exibido no rodapé');
+  ('email_contato', 'contato@vozwebtv.com.br', 'E-mail exibido no rodapé'),
+  ('secao_programacao', 'SIM', 'SIM mostra a seção Programação no site; NAO esconde'),
+  ('secao_webtv', 'SIM', 'SIM mostra a seção WebTV no site; NAO esconde'),
+  ('secao_noticias', 'SIM', 'SIM mostra a seção Notícias no site; NAO esconde'),
+  ('secao_participe', 'SIM', 'SIM mostra a seção Participe no site; NAO esconde');
 
 
 -- ═══ CONFERÊNCIA ═══════════════════════════════════════════════════

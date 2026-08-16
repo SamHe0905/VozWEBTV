@@ -490,8 +490,72 @@ $('#btn-nova-pessoa').addEventListener('click', () => abrirGaveta(formPessoa()))
 
 /* ── Ajustes (config) ──────────────────────────────────────────────*/
 
+/** Chaves `secao_*` viram interruptores; o resto vira campo de texto. */
+const SECOES_ROTULO = {
+  secao_programacao: 'Programação',
+  secao_webtv: 'WebTV (vídeo)',
+  secao_noticias: 'Notícias',
+  secao_participe: 'Participe',
+};
+
+const estaLigada = (v) => String(v ?? 'SIM').trim().toUpperCase() !== 'NAO';
+
+function renderSecoes() {
+  const alvo = $('#lista-secoes');
+  if (!alvo) return;
+
+  const chaves = estado.config.filter((c) => c.chave in SECOES_ROTULO);
+
+  if (!chaves.length) {
+    alvo.innerHTML = `
+      <div class="border-3 border-azul bg-amarelo px-4 py-3 font-sans text-sm leading-relaxed text-azul">
+        <strong>Ainda não dá para ligar e desligar seções.</strong> Falta cadastrar
+        as chaves no banco — peça para rodar o trecho de SQL que está no
+        <code>SUPABASE.md</code>, seção “Ligar e desligar seções”.
+      </div>`;
+    return;
+  }
+
+  alvo.innerHTML = chaves
+    .map((c) => {
+      const on = estaLigada(c.valor);
+      return `
+      <label class="flex cursor-pointer items-center gap-4 border-3 border-azul ${on ? 'bg-paper' : 'bg-bg'} p-4 shadow-hard">
+        <input type="checkbox" data-secao="${esc(c.chave)}" ${on ? 'checked' : ''}
+          class="h-6 w-6 shrink-0 border-3 border-azul accent-verde" />
+        <span class="min-w-0 flex-1">
+          <span class="block font-display text-lg/[1.1] uppercase text-azul">${esc(SECOES_ROTULO[c.chave])}</span>
+          <span class="mt-1 block font-mono text-[11px] uppercase tracking-widest text-cinza">
+            ${on ? 'Aparece no site' : 'Escondida do site'}
+          </span>
+        </span>
+      </label>`;
+    })
+    .join('');
+
+  alvo.querySelectorAll('[data-secao]').forEach((inp) =>
+    inp.addEventListener('change', async () => {
+      const valor = inp.checked ? 'SIM' : 'NAO';
+      try {
+        await atualizar('config', `chave=eq.${encodeURIComponent(inp.dataset.secao)}`, { valor });
+        limparCache();
+        const c = estado.config.find((x) => x.chave === inp.dataset.secao);
+        if (c) c.valor = valor;
+        renderSecoes();
+        alerta(inp.checked ? 'Seção ligada.' : 'Seção escondida do site.');
+      } catch (err) {
+        inp.checked = !inp.checked; // desfaz o visual se o banco recusou
+        alerta(err.message, 'erro');
+      }
+    })
+  );
+}
+
 function renderConfig() {
+  renderSecoes();
+
   $('#lista-config').innerHTML = estado.config
+    .filter((c) => !(c.chave in SECOES_ROTULO))
     .map(
       (c) => `
       <form data-chave="${esc(c.chave)}" class="border-3 border-azul bg-paper p-4 shadow-hard">
