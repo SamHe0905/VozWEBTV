@@ -43,6 +43,23 @@ O repositório, esse sim, está na conta pessoal do GitHub
 (`SamHe0905/VozWEBTV`) — então a Vercel precisou de autorização do GitHub App
 para enxergá-lo.
 
+### ⚠️ Requisitos do servidor do AzuraCast (antes de contratar)
+
+**O stream precisa ser HTTPS, e para isso o servidor precisa de um domínio
+ou subdomínio — não basta um IP.** O site é HTTPS, e navegador bloqueia
+áudio HTTP dentro de página HTTPS: o play simplesmente não funciona. O
+AzuraCast emite certificado Let's Encrypt sozinho, mas o Let's Encrypt
+exige um nome apontando para o servidor. Descobrir isso depois significa
+refazer a instalação.
+
+Mínimo prático: 2 vCPU, 4 GB RAM, ~40 GB de disco, Ubuntu LTS.
+Banda é o que costuma surpreender: cada ouvinte consome o bitrate o tempo
+todo. A 128 kbps, 20 ouvintes simultâneos por 10h/dia dão ~250 GB/mês.
+
+O `<audio>` do site **não** usa `crossorigin`, então o stream não precisa
+mandar CORS. A API de "tocando agora" precisa — o AzuraCast já manda por
+padrão.
+
 ### O que falta
 1. **Deploy na Vercel** (conta do projeto) — `outputDirectory` já corrigido.
 2. **URL do stream do AzuraCast** — última peça para a rádio tocar.
