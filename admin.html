@@ -102,6 +102,7 @@
           <button data-aba="noticias" class="aba shrink-0 border-r-3 border-azul px-5 py-3 font-mono text-xs font-bold uppercase tracking-widest">Notícias</button>
           <button data-aba="equipe" class="aba shrink-0 border-r-3 border-azul px-5 py-3 font-mono text-xs font-bold uppercase tracking-widest">Equipe</button>
           <button data-aba="config" class="aba shrink-0 border-r-3 border-azul px-5 py-3 font-mono text-xs font-bold uppercase tracking-widest">Ajustes</button>
+          <button data-aba="contas" class="aba shrink-0 border-r-3 border-azul px-5 py-3 font-mono text-xs font-bold uppercase tracking-widest">Acessos</button>
         </nav>
       </header>
 
@@ -175,6 +176,29 @@
             </h1>
           </div>
           <div id="lista-config" class="space-y-4" aria-live="polite"></div>
+        </section>
+
+        <!-- ── ACESSOS ─────────────────────────────────────────────── -->
+        <section id="painel-contas" class="painel hidden">
+          <div class="mb-6 flex flex-col gap-4 border-b-6 border-azul pb-4 md:flex-row md:items-end md:justify-between">
+            <div>
+              <span class="rotulo text-verde-dark">Quem entra no painel</span>
+              <h1 class="mt-1 font-display text-3xl/[0.9] uppercase tracking-tight text-azul md:text-5xl/[0.9]">
+                Acessos
+              </h1>
+            </div>
+            <button id="btn-nova-conta" type="button" class="btn btn-primario self-start md:self-auto">
+              + Nova conta
+            </button>
+          </div>
+
+          <div class="mb-6 border-3 border-azul bg-amarelo px-4 py-3 font-sans text-sm leading-relaxed text-azul">
+            <strong>Isto não é a mesma coisa que a aba Equipe.</strong> Ali você
+            cadastra quem <em>aparece no site</em>. Aqui, quem <em>entra neste painel</em>
+            e pode alterar a programação. Uma pessoa pode estar em uma lista e não na outra.
+          </div>
+
+          <div id="lista-contas" class="space-y-3" aria-live="polite"></div>
         </section>
       </main>
     </div>

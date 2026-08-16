@@ -9,7 +9,7 @@
    descobrir pelo silencio no ar.
    ═══════════════════════════════════════════════════════════════════ */
 
-import { entrar, sair, estaLogado, emailLogado, listar, criar, atualizar, apagar } from './auth.js';
+import { entrar, sair, estaLogado, emailLogado, sessao, listar, criar, atualizar, apagar } from './auth.js';
 import { limparCache } from './dados.js';
 // Mesma funcao que o site usa. Uma implementacao so: duas copias desta
 // checagem divergiriam, e e' ela que impede a radio de ficar muda.
@@ -100,7 +100,12 @@ function pintarAbas(ativa) {
 }
 
 document.querySelectorAll('.aba').forEach((b) =>
-  b.addEventListener('click', () => pintarAbas(b.dataset.aba))
+  b.addEventListener('click', () => {
+    pintarAbas(b.dataset.aba);
+    // A lista de acessos vem da funcao de servidor, nao do banco: so' e'
+    // buscada quando alguem abre a aba, para nao pesar o resto do painel.
+    if (b.dataset.aba === 'contas') renderContas();
+  })
 );
 
 /* ── Gaveta (formulário) ───────────────────────────────────────────*/
@@ -524,6 +529,120 @@ function renderConfig() {
       })
     );
 }
+
+/* ── Acessos (contas de login) ─────────────────────────────────────
+   Criar conta exige a chave `service_role`, que ignora todo o RLS e nao
+   pode existir no navegador. Por isso estas chamadas vao para a funcao
+   `/api/contas` na Vercel, que guarda a chave e confere se quem pediu
+   esta na tabela `editores`. Localmente nao funciona: nao ha servidor. */
+
+async function chamarApiContas(metodo, corpo) {
+  const s = sessao();
+  const r = await fetch('/api/contas', {
+    method: metodo,
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${s?.access_token || ''}`,
+    },
+    body: corpo ? JSON.stringify(corpo) : undefined,
+  });
+
+  const txt = await r.text();
+  let d = null;
+  try {
+    d = txt ? JSON.parse(txt) : null;
+  } catch {
+    // Sem servidor de funcoes, o que volta e' o HTML de erro do servidor.
+    throw new Error(
+      'A área de acessos só funciona no site publicado. ' +
+        'No teste local não existe servidor para criar contas.'
+    );
+  }
+  if (!r.ok) throw new Error(d?.erro || `Falha (HTTP ${r.status}).`);
+  return d;
+}
+
+function formConta() {
+  return {
+    titulo: 'Nova conta',
+    campos: [
+      campoTexto('nome', 'Nome da pessoa', '', 'placeholder="Ana Beatriz"'),
+      campoTexto('email', 'E-mail', '', 'type="email" required placeholder="pessoa@exemplo.com"'),
+      campoTexto('senha', 'Senha inicial', '', 'type="text" required minlength="8" placeholder="mínimo 8 caracteres"'),
+      `<p class="border-3 border-azul bg-amarelo px-4 py-3 font-sans text-xs leading-relaxed text-azul">
+         A senha aparece à mostra para você conseguir passá-la à pessoa. Combine
+         que ela troque depois. Quem receber esta conta poderá alterar a
+         programação inteira.
+       </p>`,
+    ].join(''),
+    aoSalvarFn: async (d) => {
+      await chamarApiContas('POST', {
+        nome: d.nome.trim(),
+        email: d.email.trim(),
+        senha: d.senha,
+      });
+    },
+    aoExcluirFn: null,
+  };
+}
+
+async function renderContas() {
+  const alvo = $('#lista-contas');
+  if (!alvo) return;
+
+  let contas;
+  try {
+    contas = await chamarApiContas('GET');
+  } catch (err) {
+    alvo.innerHTML = `
+      <div class="border-6 border-azul bg-amarelo p-6">
+        <p class="font-display text-xl uppercase text-azul">Não foi possível listar os acessos</p>
+        <p class="mt-2 font-sans text-sm leading-relaxed text-azul">${esc(err.message)}</p>
+      </div>`;
+    return;
+  }
+
+  const eu = emailLogado();
+  alvo.innerHTML = contas
+    .map((c) => {
+      const souEu = c.email === eu;
+      return `
+      <article class="flex flex-wrap items-center gap-3 border-3 border-azul bg-paper p-4 shadow-hard">
+        <span class="min-w-0 flex-1">
+          <span class="block font-display text-lg/[1.1] uppercase text-azul">
+            ${esc(c.nome || c.email)}
+          </span>
+          <span class="mt-1 block font-mono text-[11px] uppercase tracking-widest text-cinza">
+            ${esc(c.email)}${souEu ? ' · você' : ''}
+          </span>
+        </span>
+        ${
+          souEu
+            ? '<span class="border-3 border-azul bg-amarelo px-2 py-1 font-mono text-[10px] font-bold uppercase tracking-widest text-azul">Sua conta</span>'
+            : `<button type="button" data-remover="${esc(c.user_id)}" data-email="${esc(c.email)}"
+                 class="border-3 border-azul bg-paper px-4 py-2 font-mono text-xs font-bold uppercase tracking-widest text-azul hover:bg-amarelo">
+                 Tirar acesso
+               </button>`
+        }
+      </article>`;
+    })
+    .join('');
+
+  alvo.querySelectorAll('[data-remover]').forEach((btn) =>
+    btn.addEventListener('click', async () => {
+      if (!confirm(`Tirar o acesso de ${btn.dataset.email}? A conta continua existindo, mas deixa de poder editar.`)) return;
+      try {
+        await chamarApiContas('DELETE', { user_id: btn.dataset.remover });
+        alerta('Acesso removido.');
+        renderContas();
+      } catch (err) {
+        alerta(err.message, 'erro');
+      }
+    })
+  );
+}
+
+$('#btn-nova-conta').addEventListener('click', () => abrirGaveta(formConta()));
 
 /* ── Carregamento ──────────────────────────────────────────────────*/
 
